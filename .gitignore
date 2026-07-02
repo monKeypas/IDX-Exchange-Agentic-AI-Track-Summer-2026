@@ -1,0 +1,13 @@
+# Local workspace state (machine-specific timestamps)
+openclaw-workspace-state.json
+
+# OS / editor
+.DS_Store
+*.swp
+*~
+
+# Never commit secrets — use config/openclaw.json.example as a template
+config/openclaw.json
+.env
+*.pem
+*.key
