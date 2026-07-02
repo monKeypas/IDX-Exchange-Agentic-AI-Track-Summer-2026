@@ -62,9 +62,16 @@ flowchart LR
     RAG --> TE
     TE -->|SQL / API calls| MLS
     TE -->|embeddings lookup| VEC
-    TE -->|write state| MEM
-    MEM -->|updated context| ORCH
-    ORCH -->|formatted reply| GW
+    TE -->|raw tool output| PS
+    TE -->|raw tool output| MS
+    TE -->|raw tool output| RAG
+    PS -->|write session updates| MEM
+    MS -->|write session updates| MEM
+    RAG -->|write session updates| MEM
+    PS -->|human-readable response text| ORCH
+    MS -->|human-readable response text| ORCH
+    RAG -->|human-readable response text| ORCH
+    ORCH -->|skill response payload| GW
     GW -->|outbound message| WA
     WA -->|response| U
 ```
@@ -91,9 +98,10 @@ sequenceDiagram
     Skills->>Tools: invoke searchListings(params)
     Tools->>MLS: query listings (beds, price, city)
     MLS-->>Tools: matching records
-    Tools->>Session: update short-term state + log results
-    Tools-->>Orchestrator: structured tool output
-    Orchestrator-->>Gateway: formatted natural-language response
+    Tools-->>Skills: raw listing records
+    Skills->>Session: update short-term state + log results
+    Skills-->>Orchestrator: formatted natural-language response
+    Orchestrator-->>Gateway: skill response payload
     Gateway-->>WhatsApp: send reply
     WhatsApp-->>User: "Here are 4 matching listings…"
 ```
@@ -101,9 +109,9 @@ sequenceDiagram
 ### Simplified Linear Flow
 
 ```
-User → WhatsApp → OpenClaw Runtime → Skill Selector → Tool Execution → Memory Update → Response → User
-                                              ↓
-                                        MLS Databases
+User → WhatsApp → OpenClaw Runtime → Skill Selector → Active Skill → Tool Execution → MLS Databases
+                                                                    ↓
+Tool output → Active Skill (format reply + update memory) → Runtime / Gateway → WhatsApp → User
 ```
 
 ---
@@ -232,9 +240,22 @@ flowchart TD
     J --> M[(MLS Market Data API)]
     K --> N[(Vector Store / Embeddings)]
 
-    I & J & K --> O[Memory Update<br/>session state + result cache]
-    O --> P[Response Formatter]
-    P --> Q[Gateway → WhatsApp outbound]
+    L --> I
+    M --> J
+    N --> K
+
+    I --> F
+    J --> G
+    K --> H
+
+    F --> O[Memory Update<br/>session state + result cache]
+    G --> O
+    H --> O
+
+    F --> P[Response Formatter (Skill Layer)]
+    G --> P
+    H --> P
+    P --> Q[Gateway outbound payload]
     Q --> R[👤 User receives reply]
 
     style A fill:#e8f4fd
