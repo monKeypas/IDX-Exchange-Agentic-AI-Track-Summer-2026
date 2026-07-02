@@ -54,7 +54,7 @@ flowchart TD
 - **User (`U`)**: The human sending natural-language real estate queries (e.g., price range, city, bedroom count).
 - **WhatsApp Channel (`WA`)**: Messaging surface that delivers raw messages and metadata into OpenClaw, and carries responses back to the user.
 - **OpenClaw Gateway (`GW`)**: Entry/exit point of the runtime; normalizes channel events into a standard request shape and sends response payloads back out.
-- **Orchestrator (`ORCH`)**: Core coordination layer that receives normalized requests, loads context, calls the skill selector, and forwards final skill responses back to the gateway.
+- **Orchestrator (`ORCH`)**: Core coordination layer that receives normalized requests, calls the skill selector, and forwards final skill responses back to the gateway.
 - **Skill Selector (`SS`)**: Lightweight classifier that inspects the request (and sometimes history) to choose which skill should own this turn (property search, market stats, or RAG).
 - **Property Search Skill (`SK1`)**: Domain-specific logic for listing search; converts natural language into structured filters and calls `searchListings`.
 - **Market Stats Skill (`SK2`)**: Computes or retrieves aggregate stats (median price, days on market, etc.) by calling `getMarketStats`.
