@@ -12,26 +12,11 @@ OpenClaw-powered multi-agent system for IDX Exchange, integrating WhatsApp messa
 
 Architecture documentation with workflow diagrams showing how user queries flow from WhatsApp through OpenClaw skills to MLS databases.
 
-### Quick Architecture Overview
-
-```mermaid
-flowchart LR
-    U[👤 User] --> WA[📱 WhatsApp]
-    WA --> OC[OpenClaw Runtime]
-    OC --> SS[Skill Selector]
-    SS --> TE[Tool Execution]
-    TE --> MLS[(MLS Databases)]
-    TE --> MEM[(Memory)]
-    MEM --> OC
-    OC --> WA
-    WA --> U
-```
-
 ---
 
 ## Week 2 Deliverable
 
-📄 **Natural Language Property Search** — `skills/property-search/`
+📄 **Natural Language Property Search** — `openclaw/workspace/skills/property-search/`
 
 OpenClaw skill that parses free-text real estate queries into structured filter objects for `rets_property`.
 
@@ -46,34 +31,34 @@ npm run parse -- "Show me 3-bedroom condos in Irvine under $1.5M with a pool."
 ## Repository Structure
 
 ```
-├── docs/
-│   └── week-1-openclaw-architecture.md   # Week 1 deliverable
-├── skills/
-│   └── property-search/                # Week 2 OpenClaw skill
-├── src/
-│   └── parsePropertyQuery.ts             # NLP parser + rets_property mapping
-├── tests/
-│   └── parsePropertyQuery.test.ts        # 12 validation queries
-├── config/
-│   └── openclaw.json.example             # Sanitized OpenClaw config template
-├── AGENTS.md                             # Agent behavior and routing rules
-├── SOUL.md                               # Agent personality and boundaries
-├── IDENTITY.md                           # Agent identity
-├── USER.md                               # Human context
-├── TOOLS.md                              # Environment-specific tool notes
-└── HEARTBEAT.md                          # Periodic check-in prompts
+├── docs/                              # Course deliverables
+│   └── week-1-openclaw-architecture.md
+├── openclaw/                          # All OpenClaw files
+│   ├── README.md
+│   ├── config/
+│   │   └── openclaw.json.example
+│   └── workspace/
+│       ├── AGENTS.md, SOUL.md, ...    # Agent workspace files
+│       └── skills/
+│           └── property-search/       # Week 2 skill + parser + tests
+├── package.json
+└── README.md
 ```
+
+See [openclaw/README.md](openclaw/README.md) for setup details.
 
 ---
 
-## OpenClaw Workspace
-
-This repo doubles as the OpenClaw agent workspace. To restore on a new machine:
+## OpenClaw Setup
 
 ```bash
-git clone https://github.com/monKeypas/IDX-Exchange-Agentic-AI-Track-Summer-2026.git ~/.openclaw/workspace
-cp ~/.openclaw/workspace/config/openclaw.json.example ~/.openclaw/openclaw.json
-# Edit openclaw.json with your API keys and tokens, then:
+git clone https://github.com/monKeypas/IDX-Exchange-Agentic-AI-Track-Summer-2026.git
+cd IDX-Exchange-Agentic-AI-Track-Summer-2026
+
+cp openclaw/config/openclaw.json.example ~/.openclaw/openclaw.json
+# Edit ~/.openclaw/openclaw.json:
+#   - set "workspace" to the full path of openclaw/workspace/
+#   - add your API keys and tokens
 openclaw onboard
 ```
 

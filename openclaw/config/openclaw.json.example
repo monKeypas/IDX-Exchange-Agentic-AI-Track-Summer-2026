@@ -1,7 +1,7 @@
 {
   "agents": {
     "defaults": {
-      "workspace": "/Users/YOU/.openclaw/workspace",
+      "workspace": "/path/to/IDX-Exchange-Agentic-AI-Track-Summer-2026/openclaw/workspace",
       "models": {
         "openai/gpt-5.5": {
           "alias": "GPT"

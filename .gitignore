@@ -9,8 +9,8 @@ openclaw-workspace-state.json
 *.swp
 *~
 
-# Never commit secrets — use config/openclaw.json.example as a template
-config/openclaw.json
+# Never commit secrets — use openclaw/config/openclaw.json.example as a template
+openclaw/config/openclaw.json
 .env
 *.pem
 *.key

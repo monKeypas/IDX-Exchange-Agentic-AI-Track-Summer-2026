@@ -1,5 +1,5 @@
 #!/usr/bin/env npx tsx
-import { parsePropertyQuery, toRetsFilters } from "../../../src/parsePropertyQuery.js";
+import { parsePropertyQuery, toRetsFilters } from "../src/parsePropertyQuery.js";
 
 const query = process.argv.slice(2).join(" ").trim();
 
