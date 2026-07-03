@@ -1,0 +1,14 @@
+{
+  "name": "idx-exchange-agentic-ai-track-summer-2026",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "parse": "tsx skills/property-search/scripts/parse-query.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

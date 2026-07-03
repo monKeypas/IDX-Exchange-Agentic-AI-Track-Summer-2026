@@ -1,3 +1,6 @@
+# Dependencies
+node_modules/
+
 # Local workspace state (machine-specific timestamps)
 openclaw-workspace-state.json
 

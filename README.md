@@ -29,11 +29,31 @@ flowchart LR
 
 ---
 
+## Week 2 Deliverable
+
+📄 **Natural Language Property Search** — `skills/property-search/`
+
+OpenClaw skill that parses free-text real estate queries into structured filter objects for `rets_property`.
+
+```bash
+npm install
+npm test
+npm run parse -- "Show me 3-bedroom condos in Irvine under $1.5M with a pool."
+```
+
+---
+
 ## Repository Structure
 
 ```
 ├── docs/
 │   └── week-1-openclaw-architecture.md   # Week 1 deliverable
+├── skills/
+│   └── property-search/                # Week 2 OpenClaw skill
+├── src/
+│   └── parsePropertyQuery.ts             # NLP parser + rets_property mapping
+├── tests/
+│   └── parsePropertyQuery.test.ts        # 12 validation queries
 ├── config/
 │   └── openclaw.json.example             # Sanitized OpenClaw config template
 ├── AGENTS.md                             # Agent behavior and routing rules
