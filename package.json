@@ -4,7 +4,11 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "parse": "tsx openclaw/workspace/skills/property-search/scripts/parse-query.ts"
+    "parse": "tsx openclaw/workspace/skills/property-search/scripts/parse-query.ts",
+    "search:mls": "tsx openclaw/workspace/skills/property-search/scripts/search-mls.ts"
+  },
+  "dependencies": {
+    "mysql2": "^3.22.6"
   },
   "devDependencies": {
     "tsx": "^4.19.4",

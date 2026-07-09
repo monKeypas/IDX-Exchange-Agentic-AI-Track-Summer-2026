@@ -113,6 +113,9 @@
     "entries": {
       "browser-automation": {
         "enabled": true
+      },
+      "property-search": {
+        "enabled": true
       }
     }
   }
