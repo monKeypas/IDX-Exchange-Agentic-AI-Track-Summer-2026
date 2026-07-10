@@ -28,6 +28,32 @@ npm run parse -- "Show me 3-bedroom condos in Irvine under $1.5M with a pool."
 
 ---
 
+## Week 3 Deliverable
+
+📄 **MLS Database Integration** — `openclaw/workspace/skills/property-search/`
+
+Connects Week 2 NLP filters to MySQL tables (`rets_property`, `california_sold`) with parameterized queries, pagination, and formatted property cards.
+
+**Prerequisites:** MySQL running with `idx_exchange` database imported (Week 0). Create a `.env` file in the project root:
+
+```
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=
+MYSQL_DATABASE=idx_exchange
+```
+
+```bash
+npm install
+npm test                                    # optional sanity check
+set -a; source .env; set +a
+npm run search:mls -- "3 bedroom condo in Irvine under 1.5m"
+```
+
+Returns JSON with parsed filters, pagination, and property cards (active listings + sold comps when city is specified).
+
+---
+
 ## Repository Structure
 
 ```
@@ -40,7 +66,15 @@ npm run parse -- "Show me 3-bedroom condos in Irvine under $1.5M with a pool."
 │   └── workspace/
 │       ├── AGENTS.md, SOUL.md, ...    # Agent workspace files
 │       └── skills/
-│           └── property-search/       # Week 2 skill + parser + tests
+│           └── property-search/       # Week 2–3 property search skill
+│               ├── src/
+│               │   ├── parsePropertyQuery.ts   # Week 2 NLP parser
+│               │   ├── mysql.ts                # Week 3 MySQL connection
+│               │   └── mlsSearch.ts            # Week 3 queries + cards
+│               ├── scripts/
+│               │   ├── parse-query.ts
+│               │   └── search-mls.ts
+│               └── tests/
 ├── package.json
 └── README.md
 ```
@@ -64,6 +98,7 @@ openclaw onboard
 
 ### Kept Local (not in git)
 
+- `.env` — MySQL credentials and API keys
 - `~/.openclaw/credentials/` — WhatsApp and channel auth
 - `~/.openclaw/openclaw.json` — live config with secrets
 - `~/.openclaw/agents/*/sessions/` — conversation history
