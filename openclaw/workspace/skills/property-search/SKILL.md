@@ -101,7 +101,7 @@ Set these before running MLS queries:
 - Active listing query against `rets_property`
 - Sold comps query against `california_sold`
 - NLP filters from Week 2 parser (`src/parsePropertyQuery.ts`)
-- Formatted card output (`src/formatPropertyCards.ts`)
+- Formatted card output (`src/mlsSearch.ts`)
 
 ## Filter mapping
 

@@ -1,5 +1,77 @@
 import { query } from "./mysql.js";
-import type { ListingRow, PropertyFilters, SoldRow } from "./mlsTypes.js";
+import { parsePropertyQuery, type ParsedPropertyQuery } from "./parsePropertyQuery.js";
+
+// --- Types ---
+
+export interface PropertyFilters extends ParsedPropertyQuery {}
+
+export interface ListingRow {
+  L_ListingID: string;
+  L_DisplayId: string | null;
+  L_Address: string | null;
+  L_City: string | null;
+  L_Zip: string | null;
+  price: number | null;
+  beds: number | null;
+  baths: number | null;
+  sqft: number | null;
+  type: string | null;
+  status: string | null;
+  lat: number | null;
+  lng: number | null;
+  YearBuilt: number | null;
+  AssociationFee: number | null;
+  DaysOnMarket: number | null;
+  PoolPrivateYN: string | null;
+  ViewYN: string | null;
+  FireplaceYN: string | null;
+  PhotoCount: number | null;
+  LA1_UserFirstName: string | null;
+  LA1_UserLastName: string | null;
+  LO1_OrganizationName: string | null;
+}
+
+export interface SoldRow {
+  ListingKey: string;
+  UnparsedAddress: string | null;
+  City: string | null;
+  CloseDate: string;
+  ClosePrice: number | null;
+  OriginalListPrice: number | null;
+  ListPrice: number | null;
+  DaysOnMarket: number | null;
+  BedroomsTotal: number | null;
+  BathroomsTotalInteger: number | null;
+  LivingArea: number | null;
+  PropertyType: string | null;
+  PropertySubType: string | null;
+  YearBuilt: number | null;
+  ListAgentFullName: string | null;
+  ListOfficeName: string | null;
+  BuyerOfficeName: string | null;
+}
+
+export interface PropertyCard {
+  id: string;
+  source: "active_listing" | "sold_comp";
+  headline: string;
+  location: string;
+  price: string;
+  facts: string[];
+  badges: string[];
+  agent: string | null;
+  office: string | null;
+  metadata: Record<string, string | number | null>;
+}
+
+export interface SearchResult {
+  query: string;
+  filters: PropertyFilters;
+  pagination: { page: number; limit: number; offset: number };
+  cards: PropertyCard[];
+}
+
+// --- Query builders ---
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
@@ -24,7 +96,7 @@ export function buildActiveListingsQuery(
   page = DEFAULT_PAGE,
   limit = DEFAULT_LIMIT,
 ): BuiltSql {
-  const { offset, page: safePage, limit: safeLimit } = normalizePagination(page, limit);
+  const { offset, limit: safeLimit } = normalizePagination(page, limit);
 
   let sql = `
 SELECT
@@ -91,11 +163,7 @@ export async function searchActiveListings(
 
   return {
     rows,
-    pagination: {
-      page: safePage,
-      limit: safeLimit,
-      offset,
-    },
+    pagination: { page: safePage, limit: safeLimit, offset },
   };
 }
 
@@ -123,4 +191,112 @@ LIMIT 50
 export async function getSoldComps(city: string, months = 12): Promise<SoldRow[]> {
   const { sql, params } = buildSoldCompsQuery(city, months);
   return query<SoldRow>(sql, params);
+}
+
+// --- Card formatting ---
+
+function formatCurrency(amount: number | null): string {
+  if (amount == null) return "N/A";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function formatNumber(value: number | null): string {
+  if (value == null) return "N/A";
+  return new Intl.NumberFormat("en-US").format(value);
+}
+
+function buildAddress(address: string | null, city: string | null, zip: string | null): string {
+  return [address, city, zip].filter(Boolean).join(", ") || "Address unavailable";
+}
+
+function formatActiveListingCards(rows: ListingRow[]): PropertyCard[] {
+  return rows.map((row) => {
+    const agentName = [row.LA1_UserFirstName, row.LA1_UserLastName].filter(Boolean).join(" ").trim();
+    const badges = [
+      row.PoolPrivateYN === "True" ? "Pool" : null,
+      row.ViewYN === "True" ? "View" : null,
+      row.FireplaceYN === "True" ? "Fireplace" : null,
+      row.PhotoCount ? `${row.PhotoCount} photos` : null,
+    ].filter((item): item is string => Boolean(item));
+
+    return {
+      id: row.L_ListingID,
+      source: "active_listing",
+      headline: `${row.type ?? "Property"} in ${row.L_City ?? "Unknown City"}`,
+      location: buildAddress(row.L_Address, row.L_City, row.L_Zip),
+      price: formatCurrency(row.price),
+      facts: [
+        `${formatNumber(row.beds)} bd`,
+        `${formatNumber(row.baths)} ba`,
+        `${formatNumber(row.sqft)} sqft`,
+        row.YearBuilt ? `Built ${row.YearBuilt}` : "Year built N/A",
+        row.DaysOnMarket != null ? `${row.DaysOnMarket} DOM` : "DOM N/A",
+      ],
+      badges,
+      agent: agentName || null,
+      office: row.LO1_OrganizationName,
+      metadata: {
+        displayId: row.L_DisplayId,
+        status: row.status,
+        latitude: row.lat,
+        longitude: row.lng,
+        hoaFee: row.AssociationFee,
+      },
+    };
+  });
+}
+
+function formatSoldCompCards(rows: SoldRow[]): PropertyCard[] {
+  return rows.map((row) => ({
+    id: row.ListingKey,
+    source: "sold_comp",
+    headline: `${row.PropertySubType ?? row.PropertyType ?? "Residential"} comp`,
+    location: [row.UnparsedAddress, row.City].filter(Boolean).join(", ") || "Address unavailable",
+    price: formatCurrency(row.ClosePrice),
+    facts: [
+      `${formatNumber(row.BedroomsTotal)} bd`,
+      `${formatNumber(row.BathroomsTotalInteger)} ba`,
+      `${formatNumber(row.LivingArea)} sqft`,
+      row.YearBuilt ? `Built ${row.YearBuilt}` : "Year built N/A",
+      row.DaysOnMarket != null ? `${row.DaysOnMarket} DOM` : "DOM N/A",
+    ],
+    badges: [row.CloseDate ? `Closed ${row.CloseDate}` : null].filter(
+      (item): item is string => Boolean(item),
+    ),
+    agent: row.ListAgentFullName,
+    office: row.ListOfficeName,
+    metadata: {
+      buyerOffice: row.BuyerOfficeName,
+      listPrice: row.ListPrice,
+      originalListPrice: row.OriginalListPrice,
+      closeDate: row.CloseDate,
+    },
+  }));
+}
+
+// --- End-to-end search ---
+
+export async function searchMlsData(
+  queryText: string,
+  options: { page?: number; limit?: number; includeSoldComps?: boolean; soldMonths?: number } = {},
+): Promise<SearchResult> {
+  const filters = await parsePropertyQuery(queryText);
+  const activeResults = await searchActiveListings(filters, options.page ?? 1, options.limit ?? 10);
+  const cards = formatActiveListingCards(activeResults.rows);
+
+  if (options.includeSoldComps && filters.city) {
+    const soldRows = await getSoldComps(filters.city, options.soldMonths ?? 12);
+    cards.push(...formatSoldCompCards(soldRows));
+  }
+
+  return {
+    query: queryText,
+    filters,
+    pagination: activeResults.pagination,
+    cards,
+  };
 }

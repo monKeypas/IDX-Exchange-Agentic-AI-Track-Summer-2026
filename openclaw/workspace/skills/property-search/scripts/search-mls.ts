@@ -1,8 +1,7 @@
 #!/usr/bin/env npx tsx
-import { searchMlsData } from "../src/searchMlsData.js";
+import { searchMlsData } from "../src/mlsSearch.js";
 
-const args = process.argv.slice(2);
-const queryText = args.join(" ").trim();
+const queryText = process.argv.slice(2).join(" ").trim();
 
 if (!queryText) {
   console.error('Usage: npm run search:mls -- "<property search query>"');
