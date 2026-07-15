@@ -13,13 +13,31 @@ describe("buildActiveListingsQuery", () => {
     const result = buildActiveListingsQuery(
       {
         city: "Irvine",
+        zip: null,
+        state: null,
+        county: null,
+        subdivision: null,
+        minPrice: null,
         maxPrice: 1_500_000,
-        beds: 3,
-        baths: 2,
-        sqft: 1500,
+        bedsMin: 3,
+        bedsMax: null,
+        bathsMin: 2,
+        sqftMin: 1500,
+        lotSqftMin: null,
         type: "Condominium",
-        pool: "True",
-        hasView: "True",
+        yearBuiltMin: null,
+        yearBuiltMax: null,
+        newConstruction: null,
+        pool: true,
+        view: true,
+        fireplace: null,
+        garage: null,
+        spa: null,
+        attachedGarage: null,
+        maxHoa: null,
+        highSchoolDistrict: null,
+        keywords: null,
+        maxDaysOnMarket: null,
       },
       2,
       25,
@@ -28,18 +46,55 @@ describe("buildActiveListingsQuery", () => {
     expect(result.sql).toContain("FROM rets_property");
     expect(result.sql).toContain("WHERE L_Status = \"Active\"");
     expect(result.sql).toContain("L_City = ?");
+    expect(result.sql).toContain("PoolPrivateYN");
     expect(result.sql).toContain("LIMIT 25 OFFSET 25");
 
-    expect(result.params).toEqual([
-      "Irvine",
-      1_500_000,
-      3,
-      2,
-      1500,
-      "Condominium",
-      "True",
-      "True",
-    ]);
+    expect(result.params).toEqual(["Irvine", 1_500_000, 3, 2, 1500, "Condominium"]);
+  });
+
+  it("uses exact bed match when min equals max", () => {
+    const result = buildActiveListingsQuery(
+      {
+        city: "San Jose",
+        zip: "95129",
+        state: null,
+        county: null,
+        subdivision: null,
+        minPrice: 1_000_000,
+        maxPrice: 2_000_000,
+        bedsMin: 4,
+        bedsMax: 4,
+        bathsMin: null,
+        sqftMin: null,
+        lotSqftMin: null,
+        type: null,
+        yearBuiltMin: 2000,
+        yearBuiltMax: null,
+        newConstruction: true,
+        pool: null,
+        view: null,
+        fireplace: null,
+        garage: true,
+        spa: null,
+        attachedGarage: null,
+        maxHoa: 500,
+        highSchoolDistrict: null,
+        keywords: "river",
+        maxDaysOnMarket: null,
+      },
+      1,
+      10,
+    );
+
+    expect(result.sql).toContain("L_Zip = ?");
+    expect(result.sql).toContain("L_Keyword2 = ?");
+    expect(result.sql).toContain("L_SystemPrice >= ?");
+    expect(result.sql).toContain("YearBuilt >= ?");
+    expect(result.sql).toContain("GarageYN");
+    expect(result.sql).toContain("MATCH(L_Remarks)");
+    expect(result.params).toContain("95129");
+    expect(result.params).toContain(4);
+    expect(result.params).toContain("river*");
   });
 });
 

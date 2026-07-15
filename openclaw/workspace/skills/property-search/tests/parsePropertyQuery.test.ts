@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { emptyPropertyFilters } from "../src/propertyFilters.js";
 import { parsePropertyQuery, toRetsFilters } from "../src/parsePropertyQuery.js";
 
 describe("parsePropertyQuery", () => {
@@ -7,15 +8,12 @@ describe("parsePropertyQuery", () => {
       "Show me 3-bedroom condos in Irvine under $1.5M with a pool.",
     );
 
-    expect(parsed).toEqual({
+    expect(parsed).toMatchObject({
       city: "Irvine",
       maxPrice: 1_500_000,
-      beds: 3,
-      baths: null,
-      sqft: null,
+      bedsMin: 3,
       type: "Condominium",
-      pool: "True",
-      hasView: null,
+      pool: true,
     });
 
     expect(toRetsFilters(parsed)).toEqual({
@@ -38,8 +36,8 @@ describe("parsePropertyQuery", () => {
     expect(parsed).toMatchObject({
       city: "San Jose",
       maxPrice: 800_000,
-      beds: 4,
-      baths: 3,
+      bedsMin: 4,
+      bathsMin: 3,
     });
   });
 
@@ -48,7 +46,7 @@ describe("parsePropertyQuery", () => {
     expect(parsed).toMatchObject({
       city: "Irvine",
       type: "Townhouse",
-      hasView: "True",
+      view: true,
     });
   });
 
@@ -66,7 +64,7 @@ describe("parsePropertyQuery", () => {
     expect(parsed).toMatchObject({
       city: "San Francisco",
       maxPrice: 900_000,
-      beds: 2,
+      bedsMin: 2,
       type: "Condominium",
     });
   });
@@ -84,9 +82,9 @@ describe("parsePropertyQuery", () => {
     const parsed = await parsePropertyQuery("3 bed 2.5 bath 1800 sqft in Irvine");
     expect(parsed).toMatchObject({
       city: "Irvine",
-      beds: 3,
-      baths: 2.5,
-      sqft: 1800,
+      bedsMin: 3,
+      bathsMin: 2.5,
+      sqftMin: 1800,
     });
   });
 
@@ -98,8 +96,8 @@ describe("parsePropertyQuery", () => {
       city: "Newport Beach",
       maxPrice: 1_200_000,
       type: "Condominium",
-      pool: "True",
-      hasView: "True",
+      pool: true,
+      view: true,
     });
   });
 
@@ -107,27 +105,77 @@ describe("parsePropertyQuery", () => {
     const parsed = await parsePropertyQuery("5 bedroom house in Palo Alto");
     expect(parsed).toMatchObject({
       city: "Palo Alto",
-      beds: 5,
+      bedsMin: 5,
     });
   });
 
-  it("returns nulls for unrecognized filters", async () => {
+  it("returns empty filters for unrecognized input", async () => {
     const parsed = await parsePropertyQuery("anything at all");
-    expect(parsed).toEqual({
-      city: null,
-      maxPrice: null,
-      beds: null,
-      baths: null,
-      sqft: null,
-      type: null,
-      pool: null,
-      hasView: null,
-    });
+    expect(parsed).toEqual(emptyPropertyFilters());
   });
 
   it("parses square feet spelled out", async () => {
     const parsed = await parsePropertyQuery("Home with 2200 square feet in Irvine");
-    expect(parsed.sqft).toBe(2200);
+    expect(parsed.sqftMin).toBe(2200);
     expect(parsed.city).toBe("Irvine");
+  });
+
+  it("parses budgets written as million", async () => {
+    const parsed = await parsePropertyQuery("under 3 million");
+    expect(parsed.maxPrice).toBe(3_000_000);
+  });
+
+  it("title-cases city names", async () => {
+    const parsed = await parsePropertyQuery("house in san jose");
+    expect(parsed.city).toBe("San Jose");
+  });
+
+  it("parses zip codes", async () => {
+    const parsed = await parsePropertyQuery("3 bed homes in zip 95129 under 2M");
+    expect(parsed).toMatchObject({
+      zip: "95129",
+      bedsMin: 3,
+      maxPrice: 2_000_000,
+    });
+  });
+
+  it("parses price ranges", async () => {
+    const parsed = await parsePropertyQuery("between 2.5 and 3 million in Irvine");
+    expect(parsed).toMatchObject({
+      city: "Irvine",
+      minPrice: 2_500_000,
+      maxPrice: 3_000_000,
+    });
+  });
+
+  it("parses exact bed count", async () => {
+    const parsed = await parsePropertyQuery("exactly 4 beds in San Jose");
+    expect(parsed).toMatchObject({
+      city: "San Jose",
+      bedsMin: 4,
+      bedsMax: 4,
+    });
+  });
+
+  it("parses year built and amenities", async () => {
+    const parsed = await parsePropertyQuery(
+      "Single family in Irvine built after 2010 with garage and fireplace hoa under 400",
+    );
+    expect(parsed).toMatchObject({
+      city: "Irvine",
+      type: "SingleFamilyResidence",
+      yearBuiltMin: 2010,
+      garage: true,
+      fireplace: true,
+      maxHoa: 400,
+    });
+  });
+
+  it("parses waterfront keywords", async () => {
+    const parsed = await parsePropertyQuery("waterfront home in Newport Beach");
+    expect(parsed).toMatchObject({
+      city: "Newport Beach",
+      keywords: "waterfront",
+    });
   });
 });

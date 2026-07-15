@@ -50,7 +50,32 @@ set -a; source .env; set +a
 npm run search:mls -- "3 bedroom condo in Irvine under 1.5m"
 ```
 
-Returns JSON with parsed filters, pagination, and property cards (active listings + sold comps when city is specified).
+Returns JSON with parsed filters, pagination, and property cards. Sold comps are controlled by `INCLUDE_SOLD_COMPS` in `src/config.ts` (default: off).
+
+---
+
+## Week 4 Deliverable
+
+📄 **[Conversational Property Search](docs/week-4-conversational-property-search.md)** — `openclaw/workspace/skills/property-search/`
+
+Multi-turn search with session memory. Asks only for missing fields, accepts several preferences in one message, then queries `rets_property` and returns WhatsApp-friendly listings (**address, price, beds/baths, photo count**).
+
+**Ready to search when session has:** location (city or zip) + budget + at least one preference (type, beds, amenities, keywords, …).
+
+```bash
+npm install
+npm test
+
+# Simulate a WhatsApp peer conversation (same userId each turn)
+npm run chat -- --user alice "Find homes in Irvine"
+npm run chat -- --user alice "Under $1.2M"
+npm run chat -- --user alice "Single family with at least 3 beds"
+
+# Reset that user's session
+npm run chat -- --user alice "new search"
+```
+
+For live WhatsApp: point OpenClaw workspace at this repo’s `openclaw/workspace/`, then on each inbound property message run `npm run chat -- --user "<peerId>" "<message>"` from the project root and send stdout back.
 
 ---
 
@@ -58,7 +83,8 @@ Returns JSON with parsed filters, pagination, and property cards (active listing
 
 ```
 ├── docs/                              # Course deliverables
-│   └── week-1-openclaw-architecture.md
+│   ├── week-1-openclaw-architecture.md
+│   └── week-4-conversational-property-search.md
 ├── openclaw/                          # All OpenClaw files
 │   ├── README.md
 │   ├── config/
@@ -66,14 +92,18 @@ Returns JSON with parsed filters, pagination, and property cards (active listing
 │   └── workspace/
 │       ├── AGENTS.md, SOUL.md, ...    # Agent workspace files
 │       └── skills/
-│           └── property-search/       # Week 2–3 property search skill
+│           └── property-search/       # Week 2–4 property search skill
 │               ├── src/
 │               │   ├── parsePropertyQuery.ts   # Week 2 NLP parser
-│               │   ├── mysql.ts                # Week 3 MySQL connection
-│               │   └── mlsSearch.ts            # Week 3 queries + cards
+│               │   ├── propertyFilters.ts      # Shared filters + SQL
+│               │   ├── mysql.ts / mlsSearch.ts # Week 3 MLS layer
+│               │   ├── config.ts               # sold-comps toggle
+│               │   ├── session.ts              # Week 4 session memory
+│               │   └── conversation.ts         # Week 4 multi-turn
 │               ├── scripts/
 │               │   ├── parse-query.ts
-│               │   └── search-mls.ts
+│               │   ├── search-mls.ts
+│               │   └── chat-turn.ts
 │               └── tests/
 ├── package.json
 └── README.md
@@ -99,6 +129,7 @@ openclaw onboard
 ### Kept Local (not in git)
 
 - `.env` — MySQL credentials and API keys
+- `openclaw/workspace/skills/property-search/.sessions.json` — local chat session store
 - `~/.openclaw/credentials/` — WhatsApp and channel auth
 - `~/.openclaw/openclaw.json` — live config with secrets
 - `~/.openclaw/agents/*/sessions/` — conversation history

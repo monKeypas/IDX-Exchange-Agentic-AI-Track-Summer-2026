@@ -1,86 +1,97 @@
 ---
 name: property-search
-description: "Parse free-text real estate queries, query MLS tables, and return formatted property cards."
+description: "Multi-turn conversational MLS search with session memory. Parse preferences, ask for missing fields, query rets_property, return WhatsApp-ready listing cards."
 ---
 
 # Property Search
 
-Use when a user describes homes in natural language. This skill parses the query into structured filters, queries the MLS database, and returns formatted property cards for downstream agents.
+Use for real-estate search over WhatsApp (or CLI). This skill keeps **per-user session memory**, asks only for missing filters, and returns active listings from `rets_property`.
 
-## When to use
+## WhatsApp / OpenClaw workflow
 
-- User asks to find homes, condos, townhomes, or land
-- User mentions city, price, bedrooms, bathrooms, sqft, pool, or view
-- User wants active listings and/or recent sold comps in a city
+On each inbound property-search message:
 
-## Commands
-
-From the project root (load `.env` once per terminal session):
+1. Identify the WhatsApp peer id (phone / channel peer) as `userId`.
+2. Run a chat turn from the **git project root** (the folder that contains `package.json`).
+   Do not `source .env` from the workspace folder — the script loads `.env` itself:
 
 ```bash
-set -a; source .env; set +a
+cd <project-root> && npm run chat -- --user "<WHATSAPP_PEER_ID>" "<USER_MESSAGE_TEXT>"
 ```
 
-**Parse only (Week 2)** — structured filters, no database:
+3. Send the script stdout back to the user on WhatsApp (plain text — no markdown tables).
+
+Do **not** invent listings. Always run the chat script and relay its reply.
+
+### Reset
+
+If the user says `new search`, `start over`, `clear`, or `reset`, the skill clears that user's session.
+
+## Conversation rules
+
+Search runs when the session has:
+
+- **location** — city **or** zip
+- **budget** — `minPrice` and/or `maxPrice`
+- **and** at least one preference: type, beds/baths, sqft, pool, garage, year built, keywords (waterfront, river, etc.), subdivision, school district, HOA cap, and more
+
+Ask only for the next missing field. Accept several preferences in one message.
+
+Supported filter examples:
+
+- `95129` or `zip 95129`
+- `between $2.5M and $3M`
+- `exactly 4 beds`
+- `built after 2010`, `new construction`
+- `with garage`, `pool`, `spa`, `fireplace`, `view`
+- `hoa under 400`
+- `waterfront`, `near river`, `lake`, `golf`
+- `1800 sqft`, `5000 sqft lot`
+- `Irvine Unified school district`
+
+Example:
+
+- User: "Find homes in Irvine"
+- Agent: "What is your budget?"
+- User: "Under $1.2M"
+- Agent: "Any preferences — condo, townhome, or single family? ..."
+- User: "Single family with at least 3 beds"
+- Agent: returns active listings
+
+## Result format
+
+Each listing includes:
+
+- address
+- price
+- beds / baths
+- photo count
+
+Up to 10 active listings, lowest price first. Sold comps are **off** by default for this flow.
+
+## Sold comps toggle
+
+Week 3 sold-comps code remains available. Toggle in:
+
+`openclaw/workspace/skills/property-search/src/config.ts`
+
+```ts
+export const INCLUDE_SOLD_COMPS = false; // set true to include california_sold in search:mls
+```
+
+Conversational WhatsApp search always uses **active listings only**.
+
+## Other commands (non-conversational)
 
 ```bash
-npm run parse -- "Show me 3-bedroom condos in Irvine under $1.5M with a pool."
+# Parse filters only (Week 2)
+npm run parse -- "3 bedroom condo in Irvine under 1.5m"
+
+# One-shot MLS search JSON (Week 3) — respects INCLUDE_SOLD_COMPS
+npm run search:mls -- "3 bedroom condo in Irvine under 1.5m"
 ```
-
-**Full search (Week 3)** — parse + query MLS + property cards:
-
-```bash
-npm run search:mls -- "Show me 3-bedroom condos in Irvine under $1.5M with a pool."
-```
-
-## Supported query filters (active listings)
-
-Any combination of these can appear in the user's natural-language query:
-
-| Filter | Example phrases | DB column | Query logic |
-|--------|-----------------|-----------|-------------|
-| City | `in Irvine`, `in San Jose` | `L_City` | exact match |
-| Max price | `under $1.5M`, `under 800k` | `L_SystemPrice` | `<=` max |
-| Beds (min) | `3 bed`, `4-bedroom` | `L_Keyword2` | `>=` count |
-| Baths (min) | `2 bath`, `2.5 bathroom` | `LM_Dec_3` | `>=` count |
-| Sqft (min) | `1800 sqft`, `2200 square feet` | `LM_Int2_3` | `>=` size |
-| Type | `condo`, `townhome`, `single family`, `land` | `L_Type_` | exact match |
-| Pool | word `pool` | `PoolPrivateYN` | `= "True"` |
-| View | word `view` | `ViewYN` | `= "True"` |
-
-**Property type mapping:**
-
-| User says | MLS value |
-|-----------|-----------|
-| condo | Condominium |
-| townhome | Townhouse |
-| single family | SingleFamilyResidence |
-| land | UnimprovedLand |
-
-**Always applied for active listings:**
-- `L_Status = "Active"`
-- Ordered by lowest price first
-- Returns 10 results per page (default page 1)
-
-## Sold comps behavior
-
-Sold comps come from `california_sold` and are included **only when a city is parsed** from the query.
-
-Sold comps filter by:
-- City (exact match)
-- Close date within last 12 months
-- `PropertyType = "Residential"`
-- Up to 50 results, ordered by most recent close date
-
-Sold comps do **not** filter by beds, baths, price, pool, or view.
-
-**Examples:**
-- `"4 bedroom house"` → 10 active listings only
-- `"4 bedroom house in San Jose"` → 10 active listings + up to 50 sold comps
 
 ## Environment variables
-
-Required for `search:mls` (create `.env` in project root, never commit):
 
 ```
 MYSQL_HOST=localhost
@@ -89,55 +100,22 @@ MYSQL_PASSWORD=
 MYSQL_DATABASE=idx_exchange
 ```
 
-## Output shape
-
-**Parser (`npm run parse`):**
-
-```json
-{
-  "query": "...",
-  "parsed": { "city": "Irvine", "maxPrice": 1500000, "beds": 3, "...": "..." },
-  "retsFilters": { "L_City": "Irvine", "L_SystemPrice": 1500000, "...": "..." }
-}
-```
-
-**MLS search (`npm run search:mls`):**
-
-```json
-{
-  "query": "...",
-  "filters": { "city": "Irvine", "maxPrice": 1500000, "beds": 3, "...": "..." },
-  "pagination": { "page": 1, "limit": 10, "offset": 0 },
-  "cards": [
-    {
-      "id": "...",
-      "source": "active_listing",
-      "headline": "Condominium in Irvine",
-      "location": "123 Main St, Irvine, 92618",
-      "price": "$1,250,000",
-      "facts": ["3 bd", "2 ba", "1,650 sqft", "Built 2005", "12 DOM"],
-      "badges": ["Pool", "18 photos"],
-      "agent": "...",
-      "office": "...",
-      "metadata": {}
-    }
-  ]
-}
-```
-
 ## Source files
 
 ```
 property-search/
-├── SKILL.md                    # This file
+├── SKILL.md
 ├── src/
-│   ├── parsePropertyQuery.ts   # Week 2 NLP parser
-│   ├── mysql.ts                # MySQL connection pool
-│   └── mlsSearch.ts            # Queries, formatting, orchestration
+│   ├── propertyFilters.ts      # Shared filter model + SQL clauses
+│   ├── parsePropertyQuery.ts   # NLP → PropertyFilters
+│   ├── mysql.ts                # Week 3 MySQL pool
+│   ├── mlsSearch.ts            # Week 3 queries + cards
+│   ├── config.ts               # INCLUDE_SOLD_COMPS toggle
+│   ├── session.ts              # Week 4 session memory
+│   └── conversation.ts         # Week 4 multi-turn handler
 ├── scripts/
-│   ├── parse-query.ts          # Parse-only CLI
-│   └── search-mls.ts           # Full search CLI
+│   ├── parse-query.ts
+│   ├── search-mls.ts
+│   └── chat-turn.ts            # WhatsApp / CLI turn entrypoint
 └── tests/
-    ├── parsePropertyQuery.test.ts
-    └── mlsSearch.test.ts
 ```

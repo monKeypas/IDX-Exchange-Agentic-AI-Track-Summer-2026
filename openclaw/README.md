@@ -14,22 +14,28 @@ openclaw/
     ├── TOOLS.md                 # Environment-specific tool notes
     ├── HEARTBEAT.md             # Periodic check-in prompts
     └── skills/
-        └── property-search/     # Week 2–3 property search skill
+        └── property-search/     # Week 2–4 property search skill
             ├── SKILL.md
             ├── src/
-            │   ├── parsePropertyQuery.ts   # Week 2 NLP parser
-            │   ├── mysql.ts                # Week 3 MySQL connection
-            │   └── mlsSearch.ts            # Week 3 queries + card formatting
+            │   ├── parsePropertyQuery.ts
+            │   ├── propertyFilters.ts
+            │   ├── mysql.ts
+            │   ├── mlsSearch.ts
+            │   ├── config.ts            # INCLUDE_SOLD_COMPS toggle
+            │   ├── loadEnv.ts           # project-root .env loader
+            │   ├── session.ts           # multi-turn session memory
+            │   └── conversation.ts      # follow-ups + WhatsApp replies
             ├── scripts/
-            │   ├── parse-query.ts          # Parse-only CLI
-            │   └── search-mls.ts           # Full search CLI
+            │   ├── parse-query.ts
+            │   ├── search-mls.ts
+            │   └── chat-turn.ts
             └── tests/
 ```
 
 ## Setup
 
 ```bash
-# Point OpenClaw at this workspace
+# Point OpenClaw at THIS project's workspace (required for WhatsApp skill)
 cp openclaw/config/openclaw.json.example ~/.openclaw/openclaw.json
 # Edit ~/.openclaw/openclaw.json — set workspace to the full path of openclaw/workspace/
 openclaw onboard
@@ -37,13 +43,21 @@ openclaw onboard
 
 ## Property Search Skill
 
-From the project root:
+From the **git project root**:
 
 ```bash
-# Week 2 — parse query into filters only
+# Week 2 — parse only
 npm run parse -- "3 bedroom condo in Irvine under 1.5m"
 
-# Week 3 — parse + query MLS + return property cards (requires .env with MySQL creds)
-set -a; source .env; set +a
+# Week 3 — one-shot MLS JSON (sold comps via INCLUDE_SOLD_COMPS)
 npm run search:mls -- "3 bedroom condo in Irvine under 1.5m"
+
+# Week 4 — multi-turn chat (use WhatsApp peer id as --user)
+npm run chat -- --user alice "Find homes in Irvine"
+npm run chat -- --user alice "Under $1.2M"
+npm run chat -- --user alice "Single family with at least 3 beds"
 ```
+
+Week 4 chat scripts load `.env` from the project root automatically.
+
+Full Week 4 write-up: [docs/week-4-conversational-property-search.md](../docs/week-4-conversational-property-search.md).

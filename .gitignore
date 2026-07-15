@@ -14,3 +14,6 @@ openclaw/config/openclaw.json
 .env
 *.pem
 *.key
+
+# Conversational session store (per-user WhatsApp memory)
+openclaw/workspace/skills/property-search/.sessions.json

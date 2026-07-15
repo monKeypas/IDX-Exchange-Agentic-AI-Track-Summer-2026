@@ -1,5 +1,7 @@
 #!/usr/bin/env npx tsx
+import { INCLUDE_SOLD_COMPS } from "../src/config.js";
 import { searchMlsData } from "../src/mlsSearch.js";
+import { closePool } from "../src/mysql.js";
 
 const queryText = process.argv.slice(2).join(" ").trim();
 
@@ -8,11 +10,15 @@ if (!queryText) {
   process.exit(1);
 }
 
-const result = await searchMlsData(queryText, {
-  includeSoldComps: true,
-  page: 1,
-  limit: 10,
-  soldMonths: 12,
-});
+try {
+  const result = await searchMlsData(queryText, {
+    includeSoldComps: INCLUDE_SOLD_COMPS,
+    page: 1,
+    limit: 10,
+    soldMonths: 12,
+  });
 
-console.log(JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(result, null, 2));
+} finally {
+  await closePool();
+}

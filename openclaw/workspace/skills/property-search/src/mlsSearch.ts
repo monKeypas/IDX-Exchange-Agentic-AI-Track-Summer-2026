@@ -1,9 +1,11 @@
 import { query } from "./mysql.js";
-import { parsePropertyQuery, type ParsedPropertyQuery } from "./parsePropertyQuery.js";
+import { parsePropertyQuery } from "./parsePropertyQuery.js";
+import {
+  appendPropertyFilterClauses,
+  type PropertyFilters,
+} from "./propertyFilters.js";
 
-// --- Types ---
-
-export interface PropertyFilters extends ParsedPropertyQuery {}
+export type { PropertyFilters };
 
 export interface ListingRow {
   L_ListingID: string;
@@ -112,39 +114,7 @@ WHERE L_Status = "Active"
 `;
 
   const params: unknown[] = [];
-
-  if (filters.city) {
-    sql += " AND L_City = ?";
-    params.push(filters.city);
-  }
-  if (filters.maxPrice != null) {
-    sql += " AND L_SystemPrice <= ?";
-    params.push(filters.maxPrice);
-  }
-  if (filters.beds != null) {
-    sql += " AND L_Keyword2 >= ?";
-    params.push(filters.beds);
-  }
-  if (filters.baths != null) {
-    sql += " AND LM_Dec_3 >= ?";
-    params.push(filters.baths);
-  }
-  if (filters.sqft != null) {
-    sql += " AND LM_Int2_3 >= ?";
-    params.push(filters.sqft);
-  }
-  if (filters.type) {
-    sql += " AND L_Type_ = ?";
-    params.push(filters.type);
-  }
-  if (filters.pool) {
-    sql += " AND PoolPrivateYN = ?";
-    params.push(filters.pool);
-  }
-  if (filters.hasView) {
-    sql += " AND ViewYN = ?";
-    params.push(filters.hasView);
-  }
+  sql += appendPropertyFilterClauses(filters, params);
 
   // LIMIT/OFFSET are normalized integers and safe to inline.
   sql += ` ORDER BY L_SystemPrice ASC LIMIT ${safeLimit} OFFSET ${offset}`;

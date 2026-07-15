@@ -124,6 +124,23 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
+### Property search (WhatsApp)
+
+When the user is looking for homes / listings / MLS search:
+
+1. Open `skills/property-search/SKILL.md` and follow it.
+2. From the **git project root** (folder with `package.json`), run:
+
+```bash
+npm run chat -- --user "<whatsapp-peer-id>" "<exact user message>"
+```
+
+   The chat script loads `.env` itself — do not `source .env` from this workspace folder.
+
+3. Reply on WhatsApp with the script’s stdout only (do not invent listings).
+4. Keep using the **same** `--user` id for that peer so session memory sticks.
+5. "new search" / "start over" / "clear" / "reset" clears that peer's filters.
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**
