@@ -1,63 +1,40 @@
 # OpenClaw
 
-All OpenClaw-related files for this project.
+All OpenClaw-related files for this project. Week write-ups live in [`docs/`](../docs/).
 
 ```
 openclaw/
 ├── config/
-│   └── openclaw.json.example    # Config template (copy to ~/.openclaw/openclaw.json)
+│   └── openclaw.json.example
 └── workspace/
-    ├── AGENTS.md                # Agent behavior and routing rules
-    ├── SOUL.md                  # Agent personality and boundaries
-    ├── IDENTITY.md              # Agent identity
-    ├── USER.md                  # Human context
-    ├── TOOLS.md                 # Environment-specific tool notes
-    ├── HEARTBEAT.md             # Periodic check-in prompts
+    ├── AGENTS.md, SOUL.md, IDENTITY.md, USER.md, TOOLS.md, HEARTBEAT.md
     └── skills/
-        └── property-search/     # Week 2–4 property search skill
+        └── property-search/     # Weeks 2–4
             ├── SKILL.md
             ├── src/
-            │   ├── parsePropertyQuery.ts
-            │   ├── propertyFilters.ts
-            │   ├── mysql.ts
-            │   ├── mlsSearch.ts
-            │   ├── config.ts            # INCLUDE_SOLD_COMPS toggle
-            │   ├── loadEnv.ts           # project-root .env loader
-            │   ├── session.ts           # multi-turn session memory
-            │   └── conversation.ts      # follow-ups + WhatsApp replies
             ├── scripts/
-            │   ├── parse-query.ts
-            │   ├── search-mls.ts
-            │   └── chat-turn.ts
             └── tests/
 ```
 
 ## Setup
 
 ```bash
-# Point OpenClaw at THIS project's workspace (required for WhatsApp skill)
 cp openclaw/config/openclaw.json.example ~/.openclaw/openclaw.json
-# Edit ~/.openclaw/openclaw.json — set workspace to the full path of openclaw/workspace/
+# Set workspace to the full path of openclaw/workspace/
 openclaw onboard
 ```
 
-## Property Search Skill
-
-From the **git project root**:
+## Quick commands (from git project root)
 
 ```bash
-# Week 2 — parse only
-npm run parse -- "3 bedroom condo in Irvine under 1.5m"
-
-# Week 3 — one-shot MLS JSON (sold comps via INCLUDE_SOLD_COMPS)
-npm run search:mls -- "3 bedroom condo in Irvine under 1.5m"
-
-# Week 4 — multi-turn chat (use WhatsApp peer id as --user)
-npm run chat -- --user alice "Find homes in Irvine"
-npm run chat -- --user alice "Under $1.2M"
-npm run chat -- --user alice "Single family with at least 3 beds"
+npm run parse -- "3 bedroom condo in Irvine under 1.5m"          # Week 2
+npm run search:mls -- "3 bedroom condo in Irvine under 1.5m"     # Week 3
+npm run chat -- --user alice "Find homes in Irvine"              # Week 4
 ```
 
-Week 4 chat scripts load `.env` from the project root automatically.
-
-Full Week 4 write-up: [docs/week-4-conversational-property-search.md](../docs/week-4-conversational-property-search.md).
+| Week | Doc |
+| --- | --- |
+| 1 | [Architecture](../docs/week-1-openclaw-architecture.md) |
+| 2 | [Natural language search](../docs/week-2-natural-language-property-search.md) |
+| 3 | [MLS integration](../docs/week-3-mls-database-integration.md) |
+| 4 | [Conversational search](../docs/week-4-conversational-property-search.md) |

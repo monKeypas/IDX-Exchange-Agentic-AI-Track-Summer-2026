@@ -2,9 +2,19 @@
 
 **IDX Exchange · Agentic AI Track · Summer 2026**
 
-## Architecture Documentation
+## Overview
 
-This document describes how user queries flow from WhatsApp through OpenClaw skills to MLS databases, then back to the user.
+Architecture documentation for how user queries flow from WhatsApp through OpenClaw skills to MLS databases, then back to the user. Foundation for Weeks 2–4.
+
+## Deliverable
+
+| Requirement | Implementation |
+| --- | --- |
+| Workflow documentation | This doc + mermaid diagram |
+| Component roles | Listed below |
+| End-to-end message path | WhatsApp → Gateway → Orchestrator → Skill → Tools → DB → reply |
+
+## Architecture Documentation
 
 ### Workflow Diagram (Single Source of Truth)
 
@@ -64,3 +74,7 @@ flowchart TD
 - **Vector Store (`VDB`)**: Embedding-backed store used by the RAG skill to retrieve semantically similar documents or snippets.
 - **Session Memory (`MEM`)**: Per-user state (preferences, last filters, recent results) that skills update each turn so future routing and responses can stay contextual.
 - **Skill-formatted Response (`RESP`)**: The fully formatted, human-readable message produced by the active skill, which the orchestrator simply forwards to the gateway/channel.
+
+## Continuity
+
+Week 2 implements the Property Search Skill’s NLP layer. Week 3 wires it to MySQL. Week 4 adds session memory for multi-turn WhatsApp refinement.
