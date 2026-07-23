@@ -1,5 +1,5 @@
 #!/usr/bin/env npx tsx
-import { handleConversationTurn } from "../src/conversation.js";
+import { handleConversationTurn } from "../src/session.js";
 import { closePool } from "../src/mysql.js";
 
 /**

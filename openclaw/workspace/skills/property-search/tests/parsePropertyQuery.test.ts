@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptyPropertyFilters } from "../src/propertyFilters.js";
-import { parsePropertyQuery, toRetsFilters } from "../src/parsePropertyQuery.js";
+import { emptyPropertyFilters, parsePropertyQuery, toRetsFilters } from "../src/parsePropertyQuery.js";
 
 describe("parsePropertyQuery", () => {
   it("parses the Week 2 example query", async () => {

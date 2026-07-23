@@ -1,6 +1,5 @@
 #!/usr/bin/env npx tsx
-import { INCLUDE_SOLD_COMPS } from "../src/config.js";
-import { searchMlsData } from "../src/mlsSearch.js";
+import { INCLUDE_SOLD_COMPS, searchMlsData } from "../src/mlsSearch.js";
 import { closePool } from "../src/mysql.js";
 
 const queryText = process.argv.slice(2).join(" ").trim();

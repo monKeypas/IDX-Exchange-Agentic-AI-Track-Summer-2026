@@ -12,6 +12,9 @@ openclaw/
         └── property-search/     # Weeks 2–4
             ├── SKILL.md
             ├── src/
+            │   ├── parsePropertyQuery.ts   # Week 2
+            │   ├── mysql.ts / mlsSearch.ts # Week 3
+            │   └── session.ts              # Week 4
             ├── scripts/
             └── tests/
 ```

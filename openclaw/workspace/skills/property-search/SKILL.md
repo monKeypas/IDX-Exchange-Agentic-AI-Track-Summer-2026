@@ -71,9 +71,7 @@ Up to 10 active listings, lowest price first. Sold comps are **off** by default 
 
 ## Sold comps toggle
 
-Week 3 sold-comps code remains available. Toggle in:
-
-`openclaw/workspace/skills/property-search/src/config.ts`
+Week 3 sold-comps code remains available. Toggle in `src/mlsSearch.ts`:
 
 ```ts
 export const INCLUDE_SOLD_COMPS = false; // set true to include california_sold in search:mls
@@ -106,16 +104,13 @@ MYSQL_DATABASE=idx_exchange
 property-search/
 ├── SKILL.md
 ├── src/
-│   ├── propertyFilters.ts      # Shared filter model + SQL clauses
-│   ├── parsePropertyQuery.ts   # NLP → PropertyFilters
+│   ├── parsePropertyQuery.ts   # Week 2 NLP + filter model
 │   ├── mysql.ts                # Week 3 MySQL pool
 │   ├── mlsSearch.ts            # Week 3 queries + cards
-│   ├── config.ts               # INCLUDE_SOLD_COMPS toggle
-│   ├── session.ts              # Week 4 session memory
-│   └── conversation.ts         # Week 4 multi-turn handler
+│   └── session.ts              # Week 4 session + multi-turn
 ├── scripts/
 │   ├── parse-query.ts
 │   ├── search-mls.ts
-│   └── chat-turn.ts            # WhatsApp / CLI turn entrypoint
+│   └── chat-turn.ts
 └── tests/
 ```

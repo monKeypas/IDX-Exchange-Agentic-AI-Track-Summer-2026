@@ -12,7 +12,7 @@ Builds on **Week 2** parsing and **Week 3** MySQL search.
 
 | Requirement | Implementation |
 | --- | --- |
-| Multi-turn conversation | `conversation.ts` + `chat-turn.ts` |
+| Multi-turn conversation | `session.ts` + `chat-turn.ts` |
 | Progressive refinement | Session merges prefs each turn |
 | Session memory | `session.ts` (memory + `.sessions.json`) |
 | `rets_property` results | `searchActiveListings` |
@@ -68,12 +68,11 @@ Relay stdout to WhatsApp (do not invent listings). Use the same `--user` per pee
 
 | File | Role |
 | --- | --- |
-| `src/session.ts` | Per-user session memory |
-| `src/conversation.ts` | Readiness, questions, listing formatter |
-| `src/propertyFilters.ts` | Shared filters + SQL clauses |
+| `src/session.ts` | Session memory + multi-turn handler + listing formatter |
 | `src/parsePropertyQuery.ts` | NLP parser (expanded filters) |
+| `src/mlsSearch.ts` | Active listing queries |
 | `scripts/chat-turn.ts` | CLI / WhatsApp entrypoint |
-| `tests/conversation.test.ts` | Session + formatting tests |
+| `tests/session.test.ts` | Session + formatting tests |
 
 ## Notes
 

@@ -1,12 +1,14 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
   formatListingResults,
+  getSession,
   isSearchReady,
   nextMissingQuestion,
   parseConversationalUpdate,
-} from "../src/conversation.js";
+  resetAllSessions,
+  updateSession,
+} from "../src/session.js";
 import type { ListingRow } from "../src/mlsSearch.js";
-import { getSession, resetAllSessions, updateSession } from "../src/session.js";
 
 afterEach(() => {
   resetAllSessions();

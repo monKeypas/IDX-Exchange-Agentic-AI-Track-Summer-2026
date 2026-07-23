@@ -1,6 +1,65 @@
-import { emptyPropertyFilters, type PropertyFilters } from "./propertyFilters.js";
+/** Structured filters mapped to rets_property columns. */
+export interface PropertyFilters {
+  city: string | null;
+  zip: string | null;
+  state: string | null;
+  county: string | null;
+  subdivision: string | null;
+  minPrice: number | null;
+  maxPrice: number | null;
+  bedsMin: number | null;
+  bedsMax: number | null;
+  bathsMin: number | null;
+  sqftMin: number | null;
+  lotSqftMin: number | null;
+  type: string | null;
+  yearBuiltMin: number | null;
+  yearBuiltMax: number | null;
+  newConstruction: boolean | null;
+  pool: boolean | null;
+  view: boolean | null;
+  fireplace: boolean | null;
+  garage: boolean | null;
+  spa: boolean | null;
+  attachedGarage: boolean | null;
+  maxHoa: number | null;
+  highSchoolDistrict: string | null;
+  keywords: string | null;
+  maxDaysOnMarket: number | null;
+}
 
 export type ParsedPropertyQuery = PropertyFilters;
+
+export function emptyPropertyFilters(): PropertyFilters {
+  return {
+    city: null,
+    zip: null,
+    state: null,
+    county: null,
+    subdivision: null,
+    minPrice: null,
+    maxPrice: null,
+    bedsMin: null,
+    bedsMax: null,
+    bathsMin: null,
+    sqftMin: null,
+    lotSqftMin: null,
+    type: null,
+    yearBuiltMin: null,
+    yearBuiltMax: null,
+    newConstruction: null,
+    pool: null,
+    view: null,
+    fireplace: null,
+    garage: null,
+    spa: null,
+    attachedGarage: null,
+    maxHoa: null,
+    highSchoolDistrict: null,
+    keywords: null,
+    maxDaysOnMarket: null,
+  };
+}
 
 function titleCaseWords(value: string): string {
   return value

@@ -74,6 +74,9 @@ npm run chat -- --user alice "Single family with at least 3 beds"
 │       ├── AGENTS.md, SOUL.md, ...
 │       └── skills/property-search/    # Weeks 2–4 (shared skill)
 │           ├── src/
+│           │   ├── parsePropertyQuery.ts   # Week 2
+│           │   ├── mysql.ts / mlsSearch.ts # Week 3
+│           │   └── session.ts              # Week 4
 │           ├── scripts/
 │           └── tests/
 ├── package.json

@@ -24,7 +24,7 @@ natural language → parsePropertyQuery → SQL filters → rets_property (+ opt
 
 ### Sold comps
 
-Controlled by `INCLUDE_SOLD_COMPS` in `src/config.ts` (default: **off**). When enabled and a city is present, up to 50 recent residential comps from `california_sold` are appended.
+Controlled by `INCLUDE_SOLD_COMPS` in `src/mlsSearch.ts` (default: **off**). When enabled and a city is present, up to 50 recent residential comps from `california_sold` are appended.
 
 ## How to Run
 
@@ -49,10 +49,9 @@ Returns JSON with `filters`, `pagination`, and `cards`.
 
 | File | Role |
 | --- | --- |
+| `src/parsePropertyQuery.ts` | NLP → structured filters |
 | `src/mysql.ts` | Pool + `query()` |
-| `src/mlsSearch.ts` | Queries, cards, end-to-end search |
-| `src/propertyFilters.ts` | Shared filter model + WHERE clauses |
-| `src/config.ts` | `INCLUDE_SOLD_COMPS` toggle |
+| `src/mlsSearch.ts` | Queries, cards, `INCLUDE_SOLD_COMPS` |
 | `scripts/search-mls.ts` | CLI entrypoint |
 | `tests/mlsSearch.test.ts` | SQL builder tests |
 
