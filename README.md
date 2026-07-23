@@ -59,6 +59,20 @@ npm run chat -- --user alice "Single family with at least 3 beds"
 
 ---
 
+## Week 5 — Market Statistics
+
+📄 **[Market Statistics Agent](docs/week-5-market-statistics-agent.md)**  
+Code: `openclaw/workspace/skills/market-stats/`
+
+Answers market questions from `california_sold`: median/avg price, $/sqft, DOM, list-to-close, trends, YoY, inventory.
+
+```bash
+npm run market -- "Is now a good time to buy in San Diego?"
+npm run market -- "What is the average price per sq ft in Pasadena?"
+```
+
+---
+
 ## Repository Structure
 
 ```
@@ -66,24 +80,40 @@ npm run chat -- --user alice "Single family with at least 3 beds"
 │   ├── week-1-openclaw-architecture.md
 │   ├── week-2-natural-language-property-search.md
 │   ├── week-3-mls-database-integration.md
-│   └── week-4-conversational-property-search.md
+│   ├── week-4-conversational-property-search.md
+│   └── week-5-market-statistics-agent.md
 ├── openclaw/
-│   ├── README.md
 │   ├── config/openclaw.json.example
 │   └── workspace/
-│       ├── AGENTS.md, SOUL.md, ...
-│       └── skills/property-search/    # Weeks 2–4 (shared skill)
-│           ├── src/
-│           │   ├── parsePropertyQuery.ts   # Week 2
-│           │   ├── mysql.ts / mlsSearch.ts # Week 3
-│           │   └── session.ts              # Week 4
-│           ├── scripts/
-│           └── tests/
+│       ├── AGENTS.md, SOUL.md, ...    # Agent guidance (Gemini)
+│       └── skills/
+│           ├── property-search/       # Weeks 2–4
+│           │   ├── src/
+│           │   │   ├── parsePropertyQuery.ts
+│           │   │   ├── mysql.ts / mlsSearch.ts
+│           │   │   └── session.ts
+│           │   ├── scripts/
+│           │   └── tests/
+│           └── market-stats/          # Week 5
+│               ├── src/
+│               │   ├── parseMarketQuery.ts
+│               │   ├── mysql.ts / marketStats.ts
+│               ├── scripts/
+│               └── tests/
 ├── package.json
 └── README.md
 ```
 
-See [openclaw/README.md](openclaw/README.md) for workspace setup.
+---
+
+## Quick commands (from git project root)
+
+```bash
+npm run parse -- "3 bedroom condo in Irvine under 1.5m"          # Week 2
+npm run search:mls -- "3 bedroom condo in Irvine under 1.5m"     # Week 3
+npm run chat -- --user alice "Find homes in Irvine"              # Week 4
+npm run market -- "Is now a good time to buy in San Diego?"      # Week 5
+```
 
 ---
 

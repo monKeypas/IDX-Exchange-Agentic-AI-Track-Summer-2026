@@ -6,7 +6,8 @@
     "test": "vitest run",
     "parse": "tsx openclaw/workspace/skills/property-search/scripts/parse-query.ts",
     "search:mls": "tsx openclaw/workspace/skills/property-search/scripts/search-mls.ts",
-    "chat": "tsx openclaw/workspace/skills/property-search/scripts/chat-turn.ts"
+    "chat": "tsx openclaw/workspace/skills/property-search/scripts/chat-turn.ts",
+    "market": "tsx openclaw/workspace/skills/market-stats/scripts/market-stats.ts"
   },
   "dependencies": {
     "mysql2": "^3.22.6"

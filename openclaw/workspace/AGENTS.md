@@ -141,6 +141,19 @@ npm run chat -- --user "<whatsapp-peer-id>" "<exact user message>"
 4. Keep using the **same** `--user` id for that peer so session memory sticks.
 5. "new search" / "start over" / "clear" / "reset" clears that peer's filters.
 
+### Market stats (WhatsApp)
+
+When the user asks about market conditions, trends, price per sqft, DOM, or “is now a good time to buy”:
+
+1. Open `skills/market-stats/SKILL.md` and follow it.
+2. From the **git project root**, run:
+
+```bash
+npm run market -- "<exact user message>"
+```
+
+3. Reply on WhatsApp with the script’s stdout only (do not invent statistics).
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**
