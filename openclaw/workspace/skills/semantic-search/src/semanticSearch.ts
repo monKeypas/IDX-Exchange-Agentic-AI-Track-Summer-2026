@@ -84,6 +84,17 @@ export async function buildEmbeddingIndex(options: {
       });
     }
     options.onProgress?.(Math.min(i + batch.length, rows.length), rows.length);
+
+    // Checkpoint so long free-tier builds survive interruptions.
+    if (listings.length % 200 === 0 || i + batchSize >= rows.length) {
+      const checkpoint: EmbeddingCache = {
+        ...emptyCacheMeta(options.limit ?? null),
+        count: listings.length,
+        listings: [...listings],
+      };
+      saveEmbeddingCache(checkpoint);
+    }
+
     // Free-tier embed RPM is tight; brief pause between batches.
     if (i + batchSize < rows.length) {
       await new Promise((resolve) => setTimeout(resolve, 800));
