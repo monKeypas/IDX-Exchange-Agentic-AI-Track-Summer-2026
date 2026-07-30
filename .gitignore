@@ -17,3 +17,6 @@ openclaw/config/openclaw.json
 
 # Conversational session store (per-user WhatsApp memory)
 openclaw/workspace/skills/property-search/.sessions.json
+
+# Semantic embedding cache (regenerable, large)
+openclaw/workspace/skills/semantic-search/.embeddings/

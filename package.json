@@ -7,9 +7,12 @@
     "parse": "tsx openclaw/workspace/skills/property-search/scripts/parse-query.ts",
     "search:mls": "tsx openclaw/workspace/skills/property-search/scripts/search-mls.ts",
     "chat": "tsx openclaw/workspace/skills/property-search/scripts/chat-turn.ts",
-    "market": "tsx openclaw/workspace/skills/market-stats/scripts/market-stats.ts"
+    "market": "tsx openclaw/workspace/skills/market-stats/scripts/market-stats.ts",
+    "embed:build": "tsx openclaw/workspace/skills/semantic-search/scripts/build-embeddings.ts",
+    "search:semantic": "tsx openclaw/workspace/skills/semantic-search/scripts/search-semantic.ts"
   },
   "dependencies": {
+    "@google/genai": "^2.14.0",
     "mysql2": "^3.22.6"
   },
   "devDependencies": {

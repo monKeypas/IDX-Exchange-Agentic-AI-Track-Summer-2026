@@ -73,33 +73,33 @@ npm run market -- "What is the average price per sq ft in Pasadena?"
 
 ---
 
+## Week 6 — Embeddings & Vector Search
+
+📄 **[Embeddings & Vector Search](docs/week-6-embeddings-vector-search.md)**  
+Code: `openclaw/workspace/skills/semantic-search/`
+
+Semantic search over listing remarks via Gemini embeddings + cosine similarity (top 5 matches).
+
+```bash
+npm run embed:build -- --limit 500    # dev subset; omit --limit for all active
+npm run search:semantic -- "charming craftsman with mountain views and character"
+```
+
+---
+
 ## Repository Structure
 
 ```
 ├── docs/                              # One write-up per week
-│   ├── week-1-openclaw-architecture.md
-│   ├── week-2-natural-language-property-search.md
-│   ├── week-3-mls-database-integration.md
-│   ├── week-4-conversational-property-search.md
-│   └── week-5-market-statistics-agent.md
+│   ├── week-1-…md … week-6-….md
 ├── openclaw/
 │   ├── config/openclaw.json.example
 │   └── workspace/
-│       ├── AGENTS.md, SOUL.md, ...    # Agent guidance (Gemini)
+│       ├── AGENTS.md, SOUL.md, ...
 │       └── skills/
 │           ├── property-search/       # Weeks 2–4
-│           │   ├── src/
-│           │   │   ├── parsePropertyQuery.ts
-│           │   │   ├── mysql.ts / mlsSearch.ts
-│           │   │   └── session.ts
-│           │   ├── scripts/
-│           │   └── tests/
-│           └── market-stats/          # Week 5
-│               ├── src/
-│               │   ├── parseMarketQuery.ts
-│               │   ├── mysql.ts / marketStats.ts
-│               ├── scripts/
-│               └── tests/
+│           ├── market-stats/          # Week 5
+│           └── semantic-search/       # Week 6
 ├── package.json
 └── README.md
 ```
@@ -113,6 +113,8 @@ npm run parse -- "3 bedroom condo in Irvine under 1.5m"          # Week 2
 npm run search:mls -- "3 bedroom condo in Irvine under 1.5m"     # Week 3
 npm run chat -- --user alice "Find homes in Irvine"              # Week 4
 npm run market -- "Is now a good time to buy in San Diego?"      # Week 5
+npm run embed:build -- --limit 500                               # Week 6 index
+npm run search:semantic -- "charming craftsman with mountain views"  # Week 6
 ```
 
 ---
@@ -134,6 +136,7 @@ openclaw onboard
 
 - `.env` — MySQL credentials and API keys
 - `openclaw/workspace/skills/property-search/.sessions.json` — chat session store
+- `openclaw/workspace/skills/semantic-search/.embeddings/` — embedding cache
 - `~/.openclaw/credentials/` — WhatsApp and channel auth
 - `~/.openclaw/openclaw.json` — live config with secrets
 - `~/.openclaw/agents/*/sessions/` — conversation history

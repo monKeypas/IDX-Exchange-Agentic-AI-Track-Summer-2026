@@ -154,6 +154,21 @@ npm run market -- "<exact user message>"
 
 3. Reply on WhatsApp with the script’s stdout only (do not invent statistics).
 
+### Semantic search (WhatsApp)
+
+When the user describes a home by vibe/style/features without structured filters
+(e.g. “charming craftsman with mountain views and character”):
+
+1. Open `skills/semantic-search/SKILL.md` and follow it.
+2. If embeddings are missing, build once (`npm run embed:build`). **Do not** rebuild with a tiny `--limit` if a cache already exists.
+3. From the **git project root**, run:
+
+```bash
+npm run search:semantic -- "<exact user message>"
+```
+
+4. Reply on WhatsApp with the script’s stdout only (do not invent listings). The script returns **top 5** matches.
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**
