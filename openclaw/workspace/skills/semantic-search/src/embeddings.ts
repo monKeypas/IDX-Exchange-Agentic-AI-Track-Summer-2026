@@ -2,11 +2,28 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { GoogleGenAI } from "@google/genai";
+import { pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
 
-export const EMBEDDING_MODEL = "gemini-embedding-001";
-export const EMBEDDING_DIMENSIONS = 768;
-
+export type EmbeddingProvider = "local" | "gemini";
 export type EmbeddingTask = "RETRIEVAL_DOCUMENT" | "RETRIEVAL_QUERY" | "SEMANTIC_SIMILARITY";
+
+const LOCAL_MODEL = "Xenova/all-MiniLM-L6-v2";
+const LOCAL_DIMENSIONS = 384;
+const GEMINI_MODEL = "gemini-embedding-001";
+const GEMINI_DIMENSIONS = 768;
+
+/** Active provider: local (default) or gemini via EMBEDDING_PROVIDER. */
+export function getEmbeddingProvider(): EmbeddingProvider {
+  const raw = (process.env.EMBEDDING_PROVIDER ?? "local").trim().toLowerCase();
+  if (raw === "gemini") return "gemini";
+  if (raw === "local" || raw === "") return "local";
+  throw new Error(`Invalid EMBEDDING_PROVIDER="${raw}". Use "local" or "gemini".`);
+}
+
+export const EMBEDDING_MODEL =
+  getEmbeddingProvider() === "gemini" ? GEMINI_MODEL : LOCAL_MODEL;
+export const EMBEDDING_DIMENSIONS =
+  getEmbeddingProvider() === "gemini" ? GEMINI_DIMENSIONS : LOCAL_DIMENSIONS;
 
 /** Resolve Gemini/Google API key from env or OpenClaw config (no secrets logged). */
 export function resolveGeminiApiKey(): string {
@@ -34,7 +51,7 @@ export function resolveGeminiApiKey(): string {
   );
 }
 
-function getClient(): GoogleGenAI {
+function getGeminiClient(): GoogleGenAI {
   return new GoogleGenAI({ apiKey: resolveGeminiApiKey() });
 }
 
@@ -42,31 +59,61 @@ function normalizeText(text: string): string {
   return text.replace(/\n/g, " ").replace(/\s+/g, " ").trim().slice(0, 8000);
 }
 
-/** Embed one or more texts with Gemini (retries on 429 rate limits). */
-export async function getEmbeddings(
+let localExtractor: FeatureExtractionPipeline | null = null;
+
+async function getLocalExtractor(): Promise<FeatureExtractionPipeline> {
+  if (!localExtractor) {
+    localExtractor = await pipeline("feature-extraction", LOCAL_MODEL);
+  }
+  return localExtractor;
+}
+
+async function getLocalEmbeddings(texts: string[]): Promise<number[][]> {
+  const extractor = await getLocalExtractor();
+  const cleaned = texts.map(normalizeText);
+  const output = await extractor(cleaned, { pooling: "mean", normalize: true });
+  const dims = output.dims as number[];
+  const data = Array.from(output.data as Float32Array | number[]);
+
+  if (dims.length === 1) {
+    // Single vector flattened as [dim]
+    return [data];
+  }
+  if (dims.length === 2) {
+    const [batch, dim] = dims;
+    const vectors: number[][] = [];
+    for (let i = 0; i < batch; i++) {
+      vectors.push(data.slice(i * dim, (i + 1) * dim));
+    }
+    return vectors;
+  }
+
+  throw new Error(`Unexpected local embedding tensor shape: [${dims.join(", ")}]`);
+}
+
+async function getGeminiEmbeddings(
   texts: string[],
-  taskType: EmbeddingTask = "SEMANTIC_SIMILARITY",
+  taskType: EmbeddingTask,
 ): Promise<number[][]> {
-  if (texts.length === 0) return [];
-  const client = getClient();
+  const client = getGeminiClient();
   const cleaned = texts.map(normalizeText);
 
   let lastError: unknown;
   for (let attempt = 0; attempt < 6; attempt++) {
     try {
       const response = await client.models.embedContent({
-        model: EMBEDDING_MODEL,
+        model: GEMINI_MODEL,
         contents: cleaned.length === 1 ? cleaned[0] : cleaned,
         config: {
           taskType,
-          outputDimensionality: EMBEDDING_DIMENSIONS,
+          outputDimensionality: GEMINI_DIMENSIONS,
         },
       });
 
       const embeddings = response.embeddings ?? [];
       if (embeddings.length !== cleaned.length) {
         throw new Error(
-          `Expected ${cleaned.length} embeddings, got ${embeddings.length} from ${EMBEDDING_MODEL}`,
+          `Expected ${cleaned.length} embeddings, got ${embeddings.length} from ${GEMINI_MODEL}`,
         );
       }
 
@@ -89,6 +136,18 @@ export async function getEmbeddings(
   }
 
   throw lastError instanceof Error ? lastError : new Error(String(lastError));
+}
+
+/** Embed one or more texts (local MiniLM by default; Gemini if EMBEDDING_PROVIDER=gemini). */
+export async function getEmbeddings(
+  texts: string[],
+  taskType: EmbeddingTask = "SEMANTIC_SIMILARITY",
+): Promise<number[][]> {
+  if (texts.length === 0) return [];
+  if (getEmbeddingProvider() === "gemini") {
+    return getGeminiEmbeddings(texts, taskType);
+  }
+  return getLocalEmbeddings(texts);
 }
 
 export async function getEmbedding(

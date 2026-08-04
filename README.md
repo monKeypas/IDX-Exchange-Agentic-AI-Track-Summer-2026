@@ -78,7 +78,7 @@ npm run market -- "What is the average price per sq ft in Pasadena?"
 📄 **[Embeddings & Vector Search](docs/week-6-embeddings-vector-search.md)**  
 Code: `openclaw/workspace/skills/semantic-search/`
 
-Semantic search over listing remarks via Gemini embeddings + cosine similarity (top 5 matches).
+Semantic search over listing remarks via **local** MiniLM embeddings (default; no API quota) + cosine similarity (top 5). Optional Gemini via `EMBEDDING_PROVIDER=gemini`.
 
 ```bash
 npm run embed:build -- --limit 500    # dev subset; omit --limit for all active

@@ -1,7 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { EMBEDDING_DIMENSIONS, EMBEDDING_MODEL } from "./embeddings.js";
+import {
+  EMBEDDING_DIMENSIONS,
+  EMBEDDING_MODEL,
+  getEmbeddingProvider,
+} from "./embeddings.js";
 
 export interface CachedListingCard {
   id: string;
@@ -51,7 +55,21 @@ export function loadEmbeddingCache(path = getCachePath()): EmbeddingCache {
   if (!raw?.listings?.length) {
     throw new Error(`Embedding cache at ${path} is empty.`);
   }
+  assertCacheMatchesProvider(raw);
   return raw;
+}
+
+/** Fail fast if the cache was built with a different embedding model. */
+export function assertCacheMatchesProvider(cache: EmbeddingCache): void {
+  if (cache.model === EMBEDDING_MODEL && cache.dimensions === EMBEDDING_DIMENSIONS) {
+    return;
+  }
+  const provider = getEmbeddingProvider();
+  throw new Error(
+    `Embedding cache model mismatch: cache has ${cache.model} (${cache.dimensions}d), ` +
+      `but current provider "${provider}" expects ${EMBEDDING_MODEL} (${EMBEDDING_DIMENSIONS}d). ` +
+      `Rebuild with: npm run embed:build -- --limit 500`,
+  );
 }
 
 export function saveEmbeddingCache(cache: EmbeddingCache, path = getCachePath()): void {

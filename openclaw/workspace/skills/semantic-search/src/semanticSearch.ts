@@ -1,4 +1,4 @@
-import { getEmbedding, getEmbeddings } from "./embeddings.js";
+import { getEmbedding, getEmbeddings, getEmbeddingProvider } from "./embeddings.js";
 import { rankByCosineSimilarity } from "./cosine.js";
 import {
   emptyCacheMeta,
@@ -85,7 +85,7 @@ export async function buildEmbeddingIndex(options: {
     }
     options.onProgress?.(Math.min(i + batch.length, rows.length), rows.length);
 
-    // Checkpoint so long free-tier builds survive interruptions.
+    // Checkpoint so long builds survive interruptions.
     if (listings.length % 200 === 0 || i + batchSize >= rows.length) {
       const checkpoint: EmbeddingCache = {
         ...emptyCacheMeta(options.limit ?? null),
@@ -95,8 +95,8 @@ export async function buildEmbeddingIndex(options: {
       saveEmbeddingCache(checkpoint);
     }
 
-    // Free-tier embed RPM is tight; brief pause between batches.
-    if (i + batchSize < rows.length) {
+    // Gemini free-tier RPM is tight; local embeds need no pause.
+    if (i + batchSize < rows.length && getEmbeddingProvider() === "gemini") {
       await new Promise((resolve) => setTimeout(resolve, 800));
     }
   }
