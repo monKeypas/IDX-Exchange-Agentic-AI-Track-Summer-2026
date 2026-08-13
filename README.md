@@ -87,11 +87,24 @@ npm run search:semantic -- "charming craftsman with mountain views and character
 
 ---
 
+## Week 7 — Hybrid Recommendations
+
+📄 **[Hybrid Recommendations](docs/week-7-hybrid-recommendations.md)**  
+Code: `openclaw/workspace/skills/recommendations/`
+
+Given a liked property (free text), rank top 5 similar active listings with structured + embedding hybrid scores and `california_sold` comp checks.
+
+```bash
+npm run recommend -- "I like 257 Fay Way in Mountain View, find similar homes"
+```
+
+---
+
 ## Repository Structure
 
 ```
 ├── docs/                              # One write-up per week
-│   ├── week-1-…md … week-6-….md
+│   ├── week-1-…md … week-7-….md
 ├── openclaw/
 │   ├── config/openclaw.json.example
 │   └── workspace/
@@ -99,7 +112,8 @@ npm run search:semantic -- "charming craftsman with mountain views and character
 │       └── skills/
 │           ├── property-search/       # Weeks 2–4
 │           ├── market-stats/          # Week 5
-│           └── semantic-search/       # Week 6
+│           ├── semantic-search/       # Week 6
+│           └── recommendations/       # Week 7
 ├── package.json
 └── README.md
 ```
@@ -115,6 +129,7 @@ npm run chat -- --user alice "Find homes in Irvine"              # Week 4
 npm run market -- "Is now a good time to buy in San Diego?"      # Week 5
 npm run embed:build -- --limit 500                               # Week 6 index
 npm run search:semantic -- "charming craftsman with mountain views"  # Week 6
+npm run recommend -- "I like 257 Fay Way, find similar homes"    # Week 7
 ```
 
 ---

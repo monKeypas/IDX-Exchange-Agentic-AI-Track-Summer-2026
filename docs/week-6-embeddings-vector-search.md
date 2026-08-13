@@ -65,4 +65,4 @@ Gemini key resolution (only when `EMBEDDING_PROVIDER=gemini`): `GEMINI_API_KEY` 
 
 ## Continuity
 
-Week 2–4 structured search stays in `property-search`. Week 6 is a separate skill for semantic/vibe queries so Gemini can route clearly; they can be merged later if desired.
+Week 2–4 structured search stays in `property-search`. Week 6 is a separate skill for semantic/vibe queries so Gemini can route clearly; they can be merged later if desired. Week 7 (`recommendations`) builds on this cache for hybrid “homes like this” scoring.

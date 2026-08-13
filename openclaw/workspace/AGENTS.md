@@ -169,6 +169,21 @@ npm run search:semantic -- "<exact user message>"
 
 4. Reply on WhatsApp with the script’s stdout only (do not invent listings). The script returns **top 5** matches.
 
+### Recommendations (WhatsApp)
+
+When the user likes an example property and wants similar homes
+(e.g. “I like 257 Fay Way in Mountain View, find similar”):
+
+1. Open `skills/recommendations/SKILL.md` and follow it.
+2. Requires the Week 6 embedding cache (`npm run embed:build` if missing).
+3. From the **git project root**, run:
+
+```bash
+npm run recommend -- "<exact user message>"
+```
+
+4. Reply on WhatsApp with the script’s stdout only (do not invent listings). Returns **top 5** hybrid recommendations with sold-comp checks.
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**
