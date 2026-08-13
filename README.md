@@ -100,11 +100,25 @@ npm run recommend -- "I like 257 Fay Way in Mountain View, find similar homes"
 
 ---
 
+## Week 8 — Retrieval-Augmented Generation (RAG)
+
+📄 **[RAG](docs/week-8-rag.md)**  
+Code: `openclaw/workspace/skills/rag/`
+
+Grounded answers to MLS / terminology questions from indexed source documents (DOM, california_sold columns, list-to-close, disclosures).
+
+```bash
+npm run rag:index
+npm run rag -- "What does DOM mean?"
+```
+
+---
+
 ## Repository Structure
 
 ```
 ├── docs/                              # One write-up per week
-│   ├── week-1-…md … week-7-….md
+│   ├── week-1-…md … week-8-….md
 ├── openclaw/
 │   ├── config/openclaw.json.example
 │   └── workspace/
@@ -113,7 +127,8 @@ npm run recommend -- "I like 257 Fay Way in Mountain View, find similar homes"
 │           ├── property-search/       # Weeks 2–4
 │           ├── market-stats/          # Week 5
 │           ├── semantic-search/       # Week 6
-│           └── recommendations/       # Week 7
+│           ├── recommendations/       # Week 7
+│           └── rag/                   # Week 8
 ├── package.json
 └── README.md
 ```
@@ -130,6 +145,8 @@ npm run market -- "Is now a good time to buy in San Diego?"      # Week 5
 npm run embed:build -- --limit 500                               # Week 6 index
 npm run search:semantic -- "charming craftsman with mountain views"  # Week 6
 npm run recommend -- "I like 257 Fay Way, find similar homes"    # Week 7
+npm run rag:index                                                # Week 8 index
+npm run rag -- "What does DOM mean?"                             # Week 8
 ```
 
 ---
@@ -152,6 +169,7 @@ openclaw onboard
 - `.env` — MySQL credentials and API keys
 - `openclaw/workspace/skills/property-search/.sessions.json` — chat session store
 - `openclaw/workspace/skills/semantic-search/.embeddings/` — embedding cache
+- `openclaw/workspace/skills/rag/.index/` — RAG chunk index
 - `~/.openclaw/credentials/` — WhatsApp and channel auth
 - `~/.openclaw/openclaw.json` — live config with secrets
 - `~/.openclaw/agents/*/sessions/` — conversation history

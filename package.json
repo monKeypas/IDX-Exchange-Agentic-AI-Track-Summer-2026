@@ -10,7 +10,9 @@
     "market": "tsx openclaw/workspace/skills/market-stats/scripts/market-stats.ts",
     "embed:build": "tsx openclaw/workspace/skills/semantic-search/scripts/build-embeddings.ts",
     "search:semantic": "tsx openclaw/workspace/skills/semantic-search/scripts/search-semantic.ts",
-    "recommend": "tsx openclaw/workspace/skills/recommendations/scripts/run-recommend.ts"
+    "recommend": "tsx openclaw/workspace/skills/recommendations/scripts/run-recommend.ts",
+    "rag:index": "tsx openclaw/workspace/skills/rag/scripts/index-rag.ts",
+    "rag": "tsx openclaw/workspace/skills/rag/scripts/run-rag.ts"
   },
   "dependencies": {
     "@google/genai": "^2.14.0",

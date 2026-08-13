@@ -184,6 +184,22 @@ npm run recommend -- "<exact user message>"
 
 4. Reply on WhatsApp with the script’s stdout only (do not invent listings). Returns **top 5** hybrid recommendations with sold-comp checks.
 
+### RAG / terminology (WhatsApp)
+
+When the user asks what a real-estate term, MLS column, disclosure, or market metric **means**
+(e.g. “What does DOM mean?”, “What columns are in california_sold?”, “What is a list-to-close ratio?”):
+
+1. Open `skills/rag/SKILL.md` and follow it.
+2. If the RAG index is missing, build once (`npm run rag:index`).
+3. From the **git project root**, run:
+
+```bash
+npm run rag -- "<exact user message>"
+```
+
+4. Reply on WhatsApp with the script’s stdout only. Do not invent definitions.
+   City metric questions are OK on RAG — it calls Week 5 for a live report. A full market dump can still use `market-stats`.
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**

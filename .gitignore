@@ -20,3 +20,6 @@ openclaw/workspace/skills/property-search/.sessions.json
 
 # Semantic embedding cache (regenerable, large)
 openclaw/workspace/skills/semantic-search/.embeddings/
+
+# RAG chunk index (regenerable)
+openclaw/workspace/skills/rag/.index/

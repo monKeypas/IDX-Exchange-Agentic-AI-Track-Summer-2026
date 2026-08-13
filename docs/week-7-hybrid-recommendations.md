@@ -53,4 +53,4 @@ npm run recommend -- "I like 257 Fay Way in Mountain View, find similar homes"
 
 ## Continuity
 
-Week 6 answers vibe queries (“show me charming craftsman…”). Week 7 answers **similarity to a liked example** (“I like this one — what else?”) and adds sold-comp price context.
+Week 6 answers vibe queries (“show me charming craftsman…”). Week 7 answers **similarity to a liked example** (“I like this one — what else?”) and adds sold-comp price context. Week 8 (RAG) explains MLS fields and terms from documents rather than ranking listings.
