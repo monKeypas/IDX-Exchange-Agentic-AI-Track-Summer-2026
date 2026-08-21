@@ -143,7 +143,7 @@ export async function parsePropertyQuery(query: string): Promise<PropertyFilters
   const lower = query.toLowerCase();
 
   const cityMatch = query.match(
-    /\bin\s+([A-Za-z][A-Za-z\s.'-]+?)(?=\s+(?:under|with|at|zip|built|hoa|between)|$)/i,
+    /\bin\s+([A-Za-z][A-Za-z\s.'-]+?)(?=\s+(?:under|with|at|zip|built|hoa|between|and|tell|whether|over|last|past|for)|\?|\s*$)/i,
   );
   if (cityMatch?.[1] && isValidCityName(cityMatch[1].trim())) {
     filters.city = titleCaseWords(cityMatch[1]);

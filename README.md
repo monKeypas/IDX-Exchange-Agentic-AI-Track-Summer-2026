@@ -114,11 +114,24 @@ npm run rag -- "What does DOM mean?"
 
 ---
 
+## Week 9 — Multi-Agent Orchestrator
+
+📄 **[Orchestrator](docs/week-9-orchestrator.md)**  
+Code: `openclaw/workspace/skills/orchestrator/`
+
+Single WhatsApp entry point — routes to property search, market stats, recommendations, RAG, or email draft; runs search + market in parallel for mixed queries.
+
+```bash
+npm run orchestrate -- --user alice "Find affordable homes in Pasadena and tell me whether prices are rising"
+```
+
+---
+
 ## Repository Structure
 
 ```
 ├── docs/                              # One write-up per week
-│   ├── week-1-…md … week-8-….md
+│   ├── week-1-…md … week-9-….md
 ├── openclaw/
 │   ├── config/openclaw.json.example
 │   └── workspace/
@@ -128,7 +141,8 @@ npm run rag -- "What does DOM mean?"
 │           ├── market-stats/          # Week 5
 │           ├── semantic-search/       # Week 6
 │           ├── recommendations/       # Week 7
-│           └── rag/                   # Week 8
+│           ├── rag/                   # Week 8
+│           └── orchestrator/          # Week 9
 ├── package.json
 └── README.md
 ```
@@ -147,6 +161,7 @@ npm run search:semantic -- "charming craftsman with mountain views"  # Week 6
 npm run recommend -- "I like 257 Fay Way, find similar homes"    # Week 7
 npm run rag:index                                                # Week 8 index
 npm run rag -- "What does DOM mean?"                             # Week 8
+npm run orchestrate -- --user alice "Find homes in Pasadena and whether prices are rising"  # Week 9
 ```
 
 ---

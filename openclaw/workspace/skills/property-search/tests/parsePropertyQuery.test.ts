@@ -177,4 +177,11 @@ describe("parsePropertyQuery", () => {
       keywords: "waterfront",
     });
   });
+
+  it("stops city before mixed-intent tail (and tell me whether...)", async () => {
+    const parsed = await parsePropertyQuery(
+      "Find me affordable homes in Pasadena and tell me whether prices are rising.",
+    );
+    expect(parsed.city).toBe("Pasadena");
+  });
 });

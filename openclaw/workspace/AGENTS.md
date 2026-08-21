@@ -124,6 +124,26 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
+### Orchestrator (WhatsApp — default)
+
+For **any** user message, use the Week 9 coordinator. Do **not** call `chat`, `market`, `rag`, or other skill scripts directly unless `orchestrate` fails.
+
+1. Open `skills/orchestrator/SKILL.md` and follow it.
+2. From the **git project root**, run:
+
+```bash
+npm run orchestrate -- --user "<whatsapp-peer-id>" "<exact user message>"
+```
+
+3. Reply on WhatsApp with the script **stdout verbatim** (plain text — no markdown bullets, no reformatting):
+   - Do **not** paraphrase, shorten, or “clean up” the output.
+   - Do **not** refer to earlier messages (“as I mentioned previously”, “still waiting for…”). Every user message gets a **fresh, complete** answer from the script, even if they asked something similar before.
+   - Do **not** merge script output with conversation memory or prior turns.
+   - Mixed queries must include **both** `Property search` and `Market stats` sections in full every time — never substitute a one-line callback for the market half.
+4. Use the same `--user` id per peer (recommendations can reuse recent search results).
+
+Routes automatically to property search, market stats, recommendations, RAG, email draft, or **both** search + market for mixed queries.
+
 ### Property search (WhatsApp)
 
 When the user is looking for homes / listings / MLS search:

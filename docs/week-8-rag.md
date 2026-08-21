@@ -64,4 +64,4 @@ npm run rag -- "What is a list-to-close ratio?"
 
 ## Continuity
 
-Week 8 explains MLS fields and terms from documents. When the question names a city, it **sources a live market report via the Week 5 market analytics agent** and grounds the answer in that report plus the docs. Week 6 embeddings are reused for retrieval only (separate RAG index, not listing vectors).
+Week 8 explains MLS fields and terms from documents. When the question names a city, it **sources a live market report via the Week 5 market analytics agent** and grounds the answer in that report plus the docs. Week 6 embeddings are reused for retrieval only (separate RAG index, not listing vectors). Week 9 (`orchestrator`) is the default WhatsApp entry point that routes to all prior agents.

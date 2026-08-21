@@ -40,4 +40,10 @@ describe("parseMarketQuery", () => {
   it("accepts a bare city name", () => {
     expect(parseMarketQuery("Oakland").city).toBe("Oakland");
   });
+
+  it("stops city before mixed-intent tail (and tell me whether...)", () => {
+    const q =
+      "Find me affordable homes in Pasadena and tell me whether prices are rising.";
+    expect(parseMarketQuery(q).city).toBe("Pasadena");
+  });
 });

@@ -41,10 +41,10 @@ export function parseMarketQuery(query: string): ParsedMarketQuery {
 
   let city: string | null = null;
   const inMatch = query.match(
-    /\bin\s+([A-Za-z][A-Za-z\s.'-]+?)(?=\s*\?|$|\s+over|\s+last|\s+past|\s+for|\s+zip|\s+under)/i,
+    /\bin\s+([A-Za-z][A-Za-z\s.'-]+?)(?=\s*\?|\s+over|\s+last|\s+past|\s+for|\s+zip|\s+under|\s+and\b|\s+tell\b|\s+whether\b|\s*$)/i,
   );
   const forMatch = query.match(
-    /\b(?:for|about)\s+([A-Za-z][A-Za-z\s.'-]+?)(?=\s*\?|$|\s+over|\s+last|\s+market)/i,
+    /\b(?:for|about)\s+([A-Za-z][A-Za-z\s.'-]+?)(?=\s*\?|\s+over|\s+last|\s+market|\s+and\b|\s+tell\b|\s+whether\b|\s*$)/i,
   );
   const rawCity = (inMatch?.[1] ?? forMatch?.[1] ?? "").trim();
   if (rawCity && isValidCityName(rawCity)) city = titleCaseWords(rawCity);
