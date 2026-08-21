@@ -1,8 +1,8 @@
 #!/usr/bin/env npx tsx
 import { orchestrate } from "../src/orchestrate.js";
-import { closePool as closeMarketPool } from "../../market-stats/src/mysql.js";
-import { closePool as closeSearchPool } from "../../property-search/src/mysql.js";
-import { closePool as closeRecommendPool } from "../../recommendations/src/mysql.js";
+import { closePool as closeMarketPool } from "../../skills/market-stats/src/mysql.js";
+import { closePool as closeSearchPool } from "../../skills/property-search/src/mysql.js";
+import { closePool as closeRecommendPool } from "../../skills/recommendations/src/mysql.js";
 
 /**
  * Single OpenClaw entry point — routes to the right agent(s).

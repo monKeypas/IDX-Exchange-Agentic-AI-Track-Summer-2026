@@ -6,7 +6,7 @@
 
 Single intelligent coordinator that analyzes each incoming query and routes it — or splits it across multiple agents — to produce one unified WhatsApp reply.
 
-Reuses all Week 2–8 skills as registered agents; adds `emailDraftAgent` for formatted summaries.
+Lives at `openclaw/workspace/orchestrator/` (**beside** `skills/`, not inside it). Reuses all Week 2–8 skills as registered agents; adds `emailDraftAgent` for formatted summaries.
 
 ## Deliverable
 
@@ -73,4 +73,4 @@ npm run orchestrate -- --user alice "What does DOM mean?"
 
 ## Continuity
 
-Weeks 2–8 remain as individual skills for direct CLI use. Week 9 is the **default WhatsApp path** — OpenClaw should prefer `orchestrate` over manually picking a skill.
+Weeks 2–8 remain as individual skills under `skills/` for direct CLI use. Week 9 is the **default WhatsApp entry point** at `orchestrator/` — OpenClaw should prefer `orchestrate` over manually picking a skill.

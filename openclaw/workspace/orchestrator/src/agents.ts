@@ -1,13 +1,13 @@
-import { answerMarketQuestion } from "../../market-stats/src/marketStats.js";
-import { parsePropertyQuery } from "../../property-search/src/parsePropertyQuery.js";
-import { searchActiveListings } from "../../property-search/src/mlsSearch.js";
+import { answerMarketQuestion } from "../../skills/market-stats/src/marketStats.js";
+import { parsePropertyQuery } from "../../skills/property-search/src/parsePropertyQuery.js";
+import { searchActiveListings } from "../../skills/property-search/src/mlsSearch.js";
 import {
   formatListingResults,
   getSession,
   updateSession,
-} from "../../property-search/src/session.js";
-import { recommendSimilarListings } from "../../recommendations/src/recommend.js";
-import { ragAnswer } from "../../rag/src/rag.js";
+} from "../../skills/property-search/src/session.js";
+import { recommendSimilarListings } from "../../skills/recommendations/src/recommend.js";
+import { ragAnswer } from "../../skills/rag/src/rag.js";
 import { formatEmailDraft, inferEmailSubject } from "./emailDraft.js";
 
 export interface AgentResult {

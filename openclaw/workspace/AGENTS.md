@@ -128,7 +128,7 @@ Skills provide your tools. When you need one, check its `SKILL.md`. Keep local n
 
 For **any** user message, use the Week 9 coordinator. Do **not** call `chat`, `market`, `rag`, or other skill scripts directly unless `orchestrate` fails.
 
-1. Open `skills/orchestrator/SKILL.md` and follow it.
+1. Open `orchestrator/README.md` if you need the agent registry / reply rules.
 2. From the **git project root**, run:
 
 ```bash
@@ -142,7 +142,7 @@ npm run orchestrate -- --user "<whatsapp-peer-id>" "<exact user message>"
    - Mixed queries must include **both** `Property search` and `Market stats` sections in full every time — never substitute a one-line callback for the market half.
 4. Use the same `--user` id per peer (recommendations can reuse recent search results).
 
-Routes automatically to property search, market stats, recommendations, RAG, email draft, or **both** search + market for mixed queries.
+Routes automatically to property search, market stats, recommendations, RAG, email draft, or **both** search + market for mixed queries. The orchestrator lives at `orchestrator/` (beside `skills/`), not inside `skills/`.
 
 ### Property search (WhatsApp)
 

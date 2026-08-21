@@ -1,11 +1,6 @@
----
-name: orchestrator
-description: "Single entry point for IDX Exchange WhatsApp queries. Routes to property search, market stats, recommendations, RAG, or email draft agents — including mixed search+market in parallel. Use for any user message instead of picking a skill manually."
----
-
 # Orchestrator (Week 9)
 
-**Default skill for WhatsApp.** Analyzes the user message and calls the right agent(s).
+Single intelligent **coordinator** — not a domain skill. Lives beside `skills/` and routes each WhatsApp query to the right agent(s).
 
 Do **not** invent listings or stats. Always run this script and relay **stdout verbatim**.
 
@@ -46,7 +41,7 @@ Use the WhatsApp peer id as `--user` so recommendation can reuse recent search r
 
 ## Prerequisites
 
-- MySQL `.env` (same as other skills)
+- MySQL `.env` (same as skills)
 - RAG index for knowledge questions: `npm run rag:index`
 - Semantic listing cache for recommendations: `npm run embed:build` (if not already built)
 
@@ -60,13 +55,13 @@ npm run orchestrate -- --user alice --json "What does DOM mean?"
 ## Source files
 
 ```
-orchestrator/
-├── SKILL.md
+openclaw/workspace/orchestrator/   # coordinator (outside skills/)
+├── README.md
 ├── src/
-│   ├── classifyIntent.ts   # search | market | recommend | knowledge | email | mixed
-│   ├── agents.ts           # wrappers for all five agents
-│   ├── emailDraft.ts       # email formatting
-│   └── orchestrate.ts      # main router
+│   ├── classifyIntent.ts
+│   ├── agents.ts
+│   ├── emailDraft.ts
+│   └── orchestrate.ts
 ├── scripts/
 │   └── run-orchestrator.ts
 └── tests/
