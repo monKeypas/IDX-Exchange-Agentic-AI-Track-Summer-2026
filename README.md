@@ -127,16 +127,29 @@ npm run orchestrate -- --user alice "Find affordable homes in Pasadena and tell 
 
 ---
 
+## Week 10 — WhatsApp Communication Layer
+
+📄 **[WhatsApp Communication Layer](docs/week-10-whatsapp.md)**  
+Code: `openclaw/workspace/orchestrator/src/whatsapp.ts`
+
+End-to-end WhatsApp path: OpenClaw channel → `onWhatsAppMessage` → `orchestrate()` → agents → formatted reply. Same `npm run orchestrate` entry as Week 9.
+
+```bash
+npm run orchestrate -- --user "<whatsapp-peer-id>" "Find homes in Pasadena under $900k"
+```
+
+---
+
 ## Repository Structure
 
 ```
 ├── docs/                              # One write-up per week
-│   ├── week-1-…md … week-9-….md
+│   ├── week-1-…md … week-10-….md
 ├── openclaw/
 │   ├── config/openclaw.json.example
 │   └── workspace/
 │       ├── AGENTS.md, SOUL.md, ...
-│       ├── orchestrator/              # Week 9 coordinator (not a skill)
+│       ├── orchestrator/              # Weeks 9–10 (coordinator + WhatsApp handler)
 │       └── skills/
 │           ├── property-search/       # Weeks 2–4
 │           ├── market-stats/          # Week 5
@@ -161,7 +174,7 @@ npm run search:semantic -- "charming craftsman with mountain views"  # Week 6
 npm run recommend -- "I like 257 Fay Way, find similar homes"    # Week 7
 npm run rag:index                                                # Week 8 index
 npm run rag -- "What does DOM mean?"                             # Week 8
-npm run orchestrate -- --user alice "Find homes in Pasadena and whether prices are rising"  # Week 9
+npm run orchestrate -- --user alice "Find homes in Pasadena and whether prices are rising"  # Weeks 9–10
 ```
 
 ---

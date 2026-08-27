@@ -55,13 +55,14 @@ npm run orchestrate -- --user alice --json "What does DOM mean?"
 ## Source files
 
 ```
-openclaw/workspace/orchestrator/   # coordinator (outside skills/)
+openclaw/workspace/orchestrator/   # Weeks 9–10 (coordinator + WhatsApp layer)
 ├── README.md
 ├── src/
 │   ├── classifyIntent.ts
 │   ├── agents.ts
 │   ├── emailDraft.ts
-│   └── orchestrate.ts
+│   ├── orchestrate.ts
+│   └── whatsapp.ts            # Week 10: onWhatsAppMessage / formatForWhatsApp
 ├── scripts/
 │   └── run-orchestrator.ts
 └── tests/

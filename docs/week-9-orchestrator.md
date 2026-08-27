@@ -73,4 +73,4 @@ npm run orchestrate -- --user alice "What does DOM mean?"
 
 ## Continuity
 
-Weeks 2–8 remain as individual skills under `skills/` for direct CLI use. Week 9 is the **default WhatsApp entry point** at `orchestrator/` — OpenClaw should prefer `orchestrate` over manually picking a skill.
+Weeks 2–8 remain as individual skills under `skills/` for direct CLI use. Week 9 is the multi-agent router at `orchestrator/`. Week 10 wraps that router in the WhatsApp message handler (`onWhatsAppMessage`) used by OpenClaw.

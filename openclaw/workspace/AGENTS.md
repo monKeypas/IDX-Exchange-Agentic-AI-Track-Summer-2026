@@ -124,9 +124,9 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
-### Orchestrator (WhatsApp — default)
+### Orchestrator + WhatsApp (default — Weeks 9–10)
 
-For **any** user message, use the Week 9 coordinator. Do **not** call `chat`, `market`, `rag`, or other skill scripts directly unless `orchestrate` fails.
+For **any** user message, use the coordinator / WhatsApp handler. Do **not** call `chat`, `market`, `rag`, or other skill scripts directly unless `orchestrate` fails.
 
 1. Open `orchestrator/README.md` if you need the agent registry / reply rules.
 2. From the **git project root**, run:
@@ -134,6 +134,8 @@ For **any** user message, use the Week 9 coordinator. Do **not** call `chat`, `m
 ```bash
 npm run orchestrate -- --user "<whatsapp-peer-id>" "<exact user message>"
 ```
+
+   That script runs Week 10 `onWhatsAppMessage` → Week 9 `orchestrate()` → agents → WhatsApp-formatted stdout.
 
 3. Reply on WhatsApp with the script **stdout verbatim** (plain text — no markdown bullets, no reformatting):
    - Do **not** paraphrase, shorten, or “clean up” the output.

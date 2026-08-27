@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { classifyIntent } from "../src/classifyIntent.js";
 import { formatEmailDraft } from "../src/emailDraft.js";
 import { formatCombinedResponse } from "../src/orchestrate.js";
+import { formatForWhatsApp } from "../src/whatsapp.js";
 
 describe("classifyIntent", () => {
   it("routes pure search queries", () => {
@@ -60,5 +61,53 @@ describe("formatEmailDraft", () => {
     expect(draft).toContain("Subject: Pasadena listings");
     expect(draft).toContain("Top homes under $1M");
     expect(draft).toContain("Draft only — not sent.");
+  });
+});
+
+describe("formatForWhatsApp", () => {
+  it("returns orchestrator reply text", () => {
+    expect(
+      formatForWhatsApp({
+        query: "q",
+        intent: "market",
+        agents: ["marketStatsAgent"],
+        reply: "Market stats — Pasadena",
+      }),
+    ).toBe("Market stats — Pasadena");
+  });
+
+  it("formats structured listing cards when provided", () => {
+    const text = formatForWhatsApp({
+      query: "q",
+      intent: "search",
+      agents: ["propertySearchAgent"],
+      reply: "",
+      listings: [
+        {
+          L_Address: "123 Main St",
+          L_City: "Pasadena",
+          price: 900000,
+          beds: 3,
+          baths: 2,
+          sqft: 1500,
+          DaysOnMarket: 12,
+        },
+      ],
+    });
+    expect(text).toContain("*123 Main St, Pasadena*");
+    expect(text).toContain("$900,000");
+    expect(text).toContain("3bd/2ba");
+    expect(text).toContain("12 days on market");
+  });
+
+  it("falls back when empty", () => {
+    expect(
+      formatForWhatsApp({
+        query: "q",
+        intent: "unknown",
+        agents: [],
+        reply: "",
+      }),
+    ).toBe("No results found.");
   });
 });

@@ -1,11 +1,12 @@
 #!/usr/bin/env npx tsx
 import { orchestrate } from "../src/orchestrate.js";
+import { onWhatsAppMessage } from "../src/whatsapp.js";
 import { closePool as closeMarketPool } from "../../skills/market-stats/src/mysql.js";
 import { closePool as closeSearchPool } from "../../skills/property-search/src/mysql.js";
 import { closePool as closeRecommendPool } from "../../skills/recommendations/src/mysql.js";
 
 /**
- * Single OpenClaw entry point — routes to the right agent(s).
+ * WhatsApp / OpenClaw entry point (Week 9–10).
  *
  * Usage:
  *   npm run orchestrate -- --user alice "Find affordable homes in Pasadena and tell me whether prices are rising"
@@ -36,11 +37,12 @@ if (!queryText) {
 }
 
 try {
-  const result = await orchestrate(queryText, userId);
   if (asJson) {
+    const result = await orchestrate(queryText, userId);
     console.log(JSON.stringify(result, null, 2));
   } else {
-    console.log(result.reply);
+    // Week 10 path: typing hook → orchestrate → formatForWhatsApp (+ soft error message)
+    console.log(await onWhatsAppMessage(queryText, userId));
   }
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);
