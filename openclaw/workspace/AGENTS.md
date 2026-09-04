@@ -222,6 +222,25 @@ npm run rag -- "<exact user message>"
 4. Reply on WhatsApp with the script’s stdout only. Do not invent definitions.
    City metric questions are OK on RAG — it calls Week 5 for a live report. A full market dump can still use `market-stats`.
 
+### Email drafts (Week 11 — approval required)
+
+When the user wants an **email** (listing alert, weekly market report, property summary, recommendation digest):
+
+1. Open `skills/email-agent/SKILL.md` and follow it.
+2. **Draft only** first — never send from chat autonomously:
+
+```bash
+npm run email:draft -- --type market --to "<recipient>" --city "Pasadena"
+```
+
+3. Show the preview / draft id to the user. Send **only** if they explicitly confirm, then:
+
+```bash
+npm run email:send -- --id "<draftId>" --approve
+```
+
+4. Without `--approve`, send is blocked. Do not invent that an email was sent. Do not log `EMAIL_PASSWORD`.
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**

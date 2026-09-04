@@ -4,7 +4,7 @@ import { buildActiveListingsQuery, buildSoldCompsQuery, normalizePagination } fr
 describe("normalizePagination", () => {
   it("normalizes invalid page and limit values", () => {
     expect(normalizePagination(0, 0)).toEqual({ page: 1, limit: 1, offset: 0 });
-    expect(normalizePagination(-10, 999)).toEqual({ page: 1, limit: 100, offset: 0 });
+    expect(normalizePagination(-10, 999)).toEqual({ page: 1, limit: 50, offset: 0 });
   });
 });
 

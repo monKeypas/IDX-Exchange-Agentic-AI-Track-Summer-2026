@@ -81,4 +81,4 @@ On WhatsApp: send any message; OpenClaw should run the command above and relay *
 
 ## Continuity
 
-Week 9 built the multi-agent router. Week 10 is the **communication layer**: WhatsApp as the UI, OpenClaw as the channel, `onWhatsAppMessage` as the explicit handler around `orchestrate()`.
+Week 9 built the multi-agent router. Week 10 is the **communication layer**: WhatsApp as the UI, OpenClaw as the channel, `onWhatsAppMessage` as the explicit handler around `orchestrate()`. Week 11 adds draft-then-approve email workflows.

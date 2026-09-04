@@ -183,7 +183,8 @@ export interface SearchResult {
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
-const MAX_LIMIT = 100;
+/** Week 11 safety: never return more than 50 rows per MLS query. */
+const MAX_LIMIT = 50;
 
 export interface BuiltSql {
   sql: string;

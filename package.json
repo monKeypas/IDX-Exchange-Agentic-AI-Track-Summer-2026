@@ -13,14 +13,19 @@
     "recommend": "tsx openclaw/workspace/skills/recommendations/scripts/run-recommend.ts",
     "rag:index": "tsx openclaw/workspace/skills/rag/scripts/index-rag.ts",
     "rag": "tsx openclaw/workspace/skills/rag/scripts/run-rag.ts",
-    "orchestrate": "tsx openclaw/workspace/orchestrator/scripts/run-orchestrator.ts"
+    "orchestrate": "tsx openclaw/workspace/orchestrator/scripts/run-orchestrator.ts",
+    "email:draft": "tsx openclaw/workspace/skills/email-agent/scripts/run-email.ts draft",
+    "email:preview": "tsx openclaw/workspace/skills/email-agent/scripts/run-email.ts preview",
+    "email:send": "tsx openclaw/workspace/skills/email-agent/scripts/run-email.ts send"
   },
   "dependencies": {
     "@google/genai": "^2.14.0",
     "@huggingface/transformers": "^4.2.0",
-    "mysql2": "^3.22.6"
+    "mysql2": "^3.22.6",
+    "nodemailer": "^9.1.1"
   },
   "devDependencies": {
+    "@types/nodemailer": "^8.0.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"

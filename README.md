@@ -140,11 +140,25 @@ npm run orchestrate -- --user "<whatsapp-peer-id>" "Find homes in Pasadena under
 
 ---
 
+## Week 11 — Email Agents & Safety Guardrails
+
+📄 **[Email Agents & Safety](docs/week-11-email-safety.md)**  
+Code: `openclaw/workspace/skills/email-agent/`
+
+Draft-then-approve emails (listing alerts, weekly market reports, summaries, recommendation digests). Nothing sends without `--approve`.
+
+```bash
+npm run email:draft -- --type market --to you@example.com --city Pasadena
+npm run email:send -- --id <draftId> --approve
+```
+
+---
+
 ## Repository Structure
 
 ```
 ├── docs/                              # One write-up per week
-│   ├── week-1-…md … week-10-….md
+│   ├── week-1-…md … week-11-….md
 ├── openclaw/
 │   ├── config/openclaw.json.example
 │   └── workspace/
@@ -155,7 +169,8 @@ npm run orchestrate -- --user "<whatsapp-peer-id>" "Find homes in Pasadena under
 │           ├── market-stats/          # Week 5
 │           ├── semantic-search/       # Week 6
 │           ├── recommendations/       # Week 7
-│           └── rag/                   # Week 8
+│           ├── rag/                   # Week 8
+│           └── email-agent/           # Week 11
 ├── package.json
 └── README.md
 ```
@@ -175,6 +190,7 @@ npm run recommend -- "I like 257 Fay Way, find similar homes"    # Week 7
 npm run rag:index                                                # Week 8 index
 npm run rag -- "What does DOM mean?"                             # Week 8
 npm run orchestrate -- --user alice "Find homes in Pasadena and whether prices are rising"  # Weeks 9–10
+npm run email:draft -- --type market --to you@example.com --city Pasadena  # Week 11
 ```
 
 ---
