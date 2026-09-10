@@ -171,7 +171,7 @@ function sessionToFilters(session: UserSession): PropertyFilters {
   const filters = emptyPropertyFilters();
   for (const key of Object.keys(filters) as (keyof PropertyFilters)[]) {
     const value = session[key];
-    if (value != null) (filters as Record<string, unknown>)[key] = value;
+    if (value != null) (filters as unknown as Record<string, unknown>)[key] = value;
   }
   return filters;
 }

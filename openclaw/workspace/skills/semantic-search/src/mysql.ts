@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import mysql from "mysql2/promise";
-import type { Pool } from "mysql2/promise";
+import type { ExecuteValues, Pool } from "mysql2/promise";
 
 let pool: Pool | null = null;
 
@@ -45,7 +45,8 @@ function getPool(): Pool {
 }
 
 export async function query<T>(sql: string, params: ReadonlyArray<unknown> = []): Promise<T[]> {
-  const [rows] = await getPool().execute(sql, [...params]);
+  // Callers build params as unknown[]; mysql2 wants its own SQL scalar union.
+  const [rows] = await getPool().execute(sql, [...params] as ExecuteValues[]);
   return rows as T[];
 }
 
