@@ -154,6 +154,22 @@ npm run email:send -- --id <draftId> --approve
 
 ---
 
+## Week 12 — Capstone
+
+📄 **[Architecture](docs/architecture.md)** — as-built multi-agent flow, both databases, approval gate
+📄 **[Schema Annotation](docs/schema-annotation.md)** — field-usage notes for `rets_property` and `california_sold`
+📄 **[Demo Runbook](docs/capstone-demo-runbook.md)** — pre-flight steps and the 5-minute demo chain
+
+Single WhatsApp entry point routing across all agents and both tables, with a
+draft → human approval → send gate on outbound email.
+
+```bash
+npm run orchestrate -- --user alice "Find homes in Pasadena and whether prices are rising"
+npm run orchestrate -- --user alice "approve"
+```
+
+---
+
 ## Repository Structure
 
 ```

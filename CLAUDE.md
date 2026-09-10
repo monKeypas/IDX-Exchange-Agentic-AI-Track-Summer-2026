@@ -55,17 +55,23 @@ WhatsApp → onWhatsAppMessage() → orchestrate() → classifyIntent() → agen
 ```
 
 [classifyIntent.ts](openclaw/workspace/orchestrator/src/classifyIntent.ts) is regex-based, returning
-`search | market | recommend | knowledge | email | mixed | unknown`. Two ordering rules in it are
-load-bearing: search+market together yields `mixed` (both agents run via `Promise.all` and the reply
-is merged under `Property search` / `Market stats` headers), and a leading "what does/is/are" sets a
-`definitional` flag that suppresses the market match so "What does DOM mean?" routes to RAG rather
-than market stats. Adding a keyword to one of those regexes can silently re-route existing queries —
+`search | market | recommend | knowledge | email | email_approve | semantic | mixed | unknown`.
+Several ordering rules in it are load-bearing: approval is checked first (it acts on an existing
+draft and must never create one), search+market together yields `mixed` (both agents run via
+`Promise.all`, merged under `Property search` / `Market stats` headers), a leading "what does/is/are"
+sets a `definitional` flag that suppresses the market match so "What does DOM mean?" routes to RAG,
+and `semantic` is the last resort before `unknown` so descriptive prose reaches embedding search
+while structured filters still win. Keyword regexes must cover plurals — `\bbedroom\b` does not
+match "bedrooms", which silently broke multi-turn refinements. Adding a keyword to one of those regexes can silently re-route existing queries —
 [orchestrate.test.ts](openclaw/workspace/orchestrator/tests/orchestrate.test.ts) pins the expected
 routing.
 
 [agents.ts](openclaw/workspace/orchestrator/src/agents.ts) is the only place skills are imported
-directly as TypeScript (relative paths into `../../skills/*/src/`). Every agent returns the same
-`{agent, reply}` shape, so the orchestrator never formats domain data itself.
+directly as TypeScript (relative paths into `../../skills/*/src/`). All seven agents return the same
+`{agent, reply}` shape, so the orchestrator never formats domain data itself. `emailDraftAgent`
+persists to the shared draft queue so `emailApprovalAgent` has a concrete draft to send; the two
+together are the WhatsApp half of the Week 11 approval gate, and `assertSendAllowed` still enforces
+it at the boundary.
 
 ### The two calling conventions
 
