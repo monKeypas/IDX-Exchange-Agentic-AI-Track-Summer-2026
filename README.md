@@ -200,6 +200,11 @@ npm run email:draft -- --type market --to you@example.com --city Pasadena  # Wee
 ```bash
 git clone https://github.com/monKeypas/IDX-Exchange-Agentic-AI-Track-Summer-2026.git
 cd IDX-Exchange-Agentic-AI-Track-Summer-2026
+npm install
+
+# Database + API credentials (needed by every DB-backed script)
+cp .env.example .env
+# Edit .env — set MYSQL_* for your local idx_exchange import
 
 cp openclaw/config/openclaw.json.example ~/.openclaw/openclaw.json
 # Edit ~/.openclaw/openclaw.json:
@@ -210,7 +215,7 @@ openclaw onboard
 
 ### Kept Local (not in git)
 
-- `.env` — MySQL credentials and API keys
+- `.env` — MySQL credentials and API keys (template: `.env.example`)
 - `openclaw/workspace/skills/property-search/.sessions.json` — chat session store
 - `openclaw/workspace/skills/semantic-search/.embeddings/` — embedding cache
 - `openclaw/workspace/skills/rag/.index/` — RAG chunk index
