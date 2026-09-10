@@ -1,9 +1,11 @@
 import {
+  emailApprovalAgent,
   emailDraftAgent,
   marketStatsAgent,
   propertySearchAgent,
   ragAgent,
   recommendationAgent,
+  semanticSearchAgent,
   type AgentResult,
 } from "./agents.js";
 import { classifyIntent, type OrchestratorIntent } from "./classifyIntent.js";
@@ -56,6 +58,14 @@ export async function orchestrate(query: string, userId: string): Promise<Orches
     }
     case "email": {
       const result = await emailDraftAgent(text, userId);
+      return { query: text, intent, agents: [result.agent], reply: result.reply };
+    }
+    case "email_approve": {
+      const result = await emailApprovalAgent(text, userId);
+      return { query: text, intent, agents: [result.agent], reply: result.reply };
+    }
+    case "semantic": {
+      const result = await semanticSearchAgent(text);
       return { query: text, intent, agents: [result.agent], reply: result.reply };
     }
     case "mixed": {

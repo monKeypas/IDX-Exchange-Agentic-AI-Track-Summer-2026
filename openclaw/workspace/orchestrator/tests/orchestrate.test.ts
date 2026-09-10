@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classifyIntent } from "../src/classifyIntent.js";
+import { classifyIntent, extractDraftId, isApprovalCommand } from "../src/classifyIntent.js";
 import { formatEmailDraft } from "../src/emailDraft.js";
 import { formatCombinedResponse } from "../src/orchestrate.js";
 import { formatForWhatsApp } from "../src/whatsapp.js";
@@ -109,5 +109,57 @@ describe("formatForWhatsApp", () => {
         reply: "",
       }),
     ).toBe("No results found.");
+  });
+});
+
+describe("classifyIntent — WhatsApp refinements", () => {
+  // Plural phrasing is what people actually type in a follow-up message.
+  it.each([
+    "3 bedrooms",
+    "Only 3 bedrooms",
+    "make it 4 bedrooms",
+    "3 beds",
+    "2 baths",
+    "with a pool",
+    "add a garage",
+    "Under $1.2M",
+  ])("routes %j as a search refinement", (text) => {
+    expect(classifyIntent(text)).toBe("search");
+  });
+});
+
+describe("classifyIntent — semantic search", () => {
+  it("routes descriptive prose with no structured filters", () => {
+    expect(classifyIntent("charming craftsman with mountain views")).toBe("semantic");
+    expect(classifyIntent("somewhere quiet with lots of natural light")).toBe("semantic");
+  });
+
+  it("prefers structured search when filters are present", () => {
+    expect(classifyIntent("cozy 3 bedroom condo in Irvine")).toBe("search");
+  });
+
+  it("does not treat greetings as descriptions", () => {
+    expect(classifyIntent("hey there")).toBe("unknown");
+    expect(classifyIntent("thanks!")).toBe("unknown");
+  });
+});
+
+describe("classifyIntent — email approval guardrail", () => {
+  it("routes explicit approval commands", () => {
+    for (const text of ["approve", "send it", "yes, send it", "ship it"]) {
+      expect(classifyIntent(text)).toBe("email_approve");
+    }
+  });
+
+  it("keeps draft requests separate from sending", () => {
+    expect(classifyIntent("Draft an email about Pasadena listings")).toBe("email");
+    expect(classifyIntent("send me a summary of Irvine condos")).toBe("email");
+    expect(isApprovalCommand("send me a summary of Irvine condos")).toBe(false);
+  });
+
+  it("extracts an explicit draft id when given", () => {
+    const id = "3f2504e0-4f89-11d3-9a0c-0305e82c3301";
+    expect(extractDraftId(`approve ${id}`)).toBe(id);
+    expect(extractDraftId("approve")).toBeNull();
   });
 });

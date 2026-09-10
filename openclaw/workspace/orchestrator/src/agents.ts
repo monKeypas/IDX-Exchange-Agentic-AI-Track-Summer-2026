@@ -8,7 +8,13 @@ import {
 } from "../../skills/property-search/src/session.js";
 import { recommendSimilarListings } from "../../skills/recommendations/src/recommend.js";
 import { ragAnswer } from "../../skills/rag/src/rag.js";
-import { formatEmailDraft, inferEmailSubject } from "./emailDraft.js";
+import { searchSemanticListings } from "../../skills/semantic-search/src/semanticSearch.js";
+import { draftEmail, markApproved } from "../../skills/email-agent/src/draftEmail.js";
+import { getDraft, listDrafts, saveDraft, updateDraft } from "../../skills/email-agent/src/draftStore.js";
+import { sendApprovedEmail } from "../../skills/email-agent/src/sendEmail.js";
+import type { EmailUseCase } from "../../skills/email-agent/src/types.js";
+import { extractDraftId } from "./classifyIntent.js";
+import { formatEmailDraft, inferEmailSubject, resolveRecipient } from "./emailDraft.js";
 
 export interface AgentResult {
   agent: string;
@@ -54,6 +60,15 @@ export async function recommendationAgent(
   };
 }
 
+/** Free-text description → L_Remarks embedding search (Week 6). */
+export async function semanticSearchAgent(query: string): Promise<AgentResult> {
+  const result = await searchSemanticListings(query, { topK: 5 });
+  return {
+    agent: "semanticSearchAgent",
+    reply: result.reply,
+  };
+}
+
 export async function ragAgent(query: string): Promise<AgentResult> {
   const result = await ragAnswer(query, { topK: 4 });
   return {
@@ -88,8 +103,84 @@ export async function emailDraftAgent(
     query,
     wantsMarket ? "Market update" : "Property listings summary",
   );
+  const useCase: EmailUseCase = wantsMarket ? "market_report" : "listing_alert";
+  const to = resolveRecipient(query);
+
+  // No recipient configured — still show the draft, but make the gap explicit.
+  if (!to) {
+    return {
+      agent: "emailDraftAgent",
+      reply: [
+        formatEmailDraft({ subject, body }),
+        "",
+        "No recipient found. Include an address (e.g. \"email this to me@example.com\")",
+        "or set EMAIL_USER in .env, then ask again.",
+      ].join("\n"),
+    };
+  }
+
+  // Persist so a later "approve" has something concrete to act on.
+  const { draft } = await draftEmail(to, subject, body, useCase, { userId, query });
+  saveDraft(draft);
+
   return {
     agent: "emailDraftAgent",
-    reply: formatEmailDraft({ subject, body }),
+    reply: formatEmailDraft({
+      subject,
+      body,
+      recipientHint: to,
+      draftId: draft.id,
+    }),
   };
+}
+
+/**
+ * Week 11 guardrail, WhatsApp side: sends ONLY the draft a human just approved.
+ * Reached exclusively from the "email_approve" intent — never from a draft turn,
+ * a heartbeat, or any autonomous path.
+ */
+export async function emailApprovalAgent(
+  query: string,
+  userId: string,
+): Promise<AgentResult> {
+  const explicitId = extractDraftId(query);
+  const draft = explicitId
+    ? getDraft(explicitId)
+    : listDrafts().find(
+        (d) => d.status === "pending_approval" && d.meta?.userId === userId,
+      ) ?? null;
+
+  if (!draft) {
+    return {
+      agent: "emailApprovalAgent",
+      reply: explicitId
+        ? `No draft found with id ${explicitId}.`
+        : "No draft is waiting for approval. Ask me to draft an email first.",
+    };
+  }
+
+  if (draft.status === "sent") {
+    return {
+      agent: "emailApprovalAgent",
+      reply: `Draft ${draft.id} was already sent to ${draft.to}.`,
+    };
+  }
+
+  const approved = updateDraft(markApproved(draft));
+
+  try {
+    const sent = await sendApprovedEmail(approved, { explicitApprove: true });
+    updateDraft(sent);
+    return {
+      agent: "emailApprovalAgent",
+      reply: `Sent "${sent.subject}" to ${sent.to}.`,
+    };
+  } catch (err) {
+    // Leave the draft approved-but-unsent so it can be retried once configured.
+    const reason = err instanceof Error ? err.message : String(err);
+    return {
+      agent: "emailApprovalAgent",
+      reply: `Approved draft ${approved.id}, but sending failed: ${reason}`,
+    };
+  }
 }
