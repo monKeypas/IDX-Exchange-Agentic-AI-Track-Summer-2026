@@ -119,90 +119,88 @@
 </header>
 
 <div class="block plain">
-  <div class="head"><span class="num">OPEN</span><span class="clock">0:00 — 0:50</span></div>
-  <p class="say">So this is our real estate assistant. It lives on WhatsApp — you just text it, like you'd text a person.</p>
-  <p class="say" style="margin-top:10px">Behind it are two MySQL tables from the California MLS — <i>rets_property</i>, everything currently for sale, and <i>california_sold</i>, everything that's already closed. You need both, because "show me some houses" and "is this a good time to buy" are completely different questions.</p>
-  <p class="say" style="margin-top:10px">So when a message comes in, something has to work out what you're actually asking and hand it to the right specialist. We ended up with seven — one searches listings, one does market stats, one searches by meaning rather than filters, one does recommendations, one answers questions out of our own documents, and two handle email.</p>
-  <p class="say" style="margin-top:10px">I'll send it eight messages. Fair warning — the last one's the one it won't send by itself.</p>
-  <p class="cue"><b>Diagram on screen, don't narrate it.</b> Switch to WhatsApp and send message 1.</p>
+  <div class="head"><span class="num">OPEN</span><span class="clock">0:00 — 0:45</span></div>
+  <p class="say">This is a WhatsApp interface over two MLS tables. <i>rets_property</i> is active listings, about 35,000 rows. <i>california_sold</i> is closed sales, about 87,000.</p>
+  <p class="say" style="margin-top:10px">Messages come in through a single handler. A classifier assigns an intent, and that dispatches to one of seven agents — property search, market stats, semantic search, recommendations, RAG, and two for email. A mixed intent runs two agents concurrently and merges the output.</p>
+  <p class="say" style="margin-top:10px">The methods differ by agent. Search compiles natural language into parameterised SQL. Semantic search embeds listings as 384-dimension vectors and ranks by cosine similarity. Recommendations combine both and validate against sold comps. RAG retrieves from indexed documents.</p>
+  <p class="say" style="margin-top:10px">I'll run eight messages through it. The last two are the email path, which requires explicit approval.</p>
+  <p class="cue">Diagram on screen, not narrated. Switch to WhatsApp.</p>
 </div>
 
 <p class="divider">The eight messages</p>
 
 <div class="block">
-  <div class="head"><span class="num">1</span><span class="clock">0:50</span></div>
+  <div class="head"><span class="num">1</span><span class="clock">0:45</span></div>
   <p class="label">Send</p>
   <p class="send">Find me affordable homes in Pasadena and tell me whether prices are rising</p>
   <p class="label">Say</p>
-  <p class="say">Okay, so look at what it did there. That got classified as a mixed intent — two different questions in one message. It ran the property search agent and the market stats agent in parallel, one hitting the active listings table, the other hitting closed sales, and merged both replies into one.</p>
-  <p class="cue"><b>Your best moment. Let them read it before you speak.</b></p>
+  <p class="say">That classified as a mixed intent — the search pattern and the market pattern both matched. Property search and market stats ran concurrently, listings from <i>rets_property</i>, medians and days-on-market from <i>california_sold</i>, and the two replies merged. 277 active listings in Pasadena, median close $1.57 million, average DOM 37 days.</p>
+  <p class="cue">Let the reply render before you talk over it.</p>
 </div>
 
 <div class="block">
-  <div class="head"><span class="num">2</span><span class="clock">1:35</span></div>
+  <div class="head"><span class="num">2</span><span class="clock">1:30</span></div>
   <p class="label">Send</p>
   <p class="send">Under $1.2M</p>
   <p class="label">Say</p>
-  <p class="say">And I didn't say Pasadena that time. The session's holding the filters from the earlier turn, so this just merged a price ceiling onto what it already had.</p>
+  <p class="say">Pasadena isn't in that message. Filters are held per user ID in a session; this parsed to a max price and merged onto the existing city rather than replacing it.</p>
 </div>
 
 <div class="block">
-  <div class="head"><span class="num">3</span><span class="clock">1:55</span></div>
+  <div class="head"><span class="num">3</span><span class="clock">1:50</span></div>
   <p class="label">Send</p>
   <p class="send">Only 3 bedrooms</p>
   <p class="label">Say</p>
-  <p class="say">Same again — city, then a max price, now an exact bedroom count. Three turns in and the filter set just keeps accumulating.</p>
-  <p class="cue"><b>Drop this one if you're behind.</b> Message 2 already made the point.</p>
+  <p class="say">Three constraints now. "Only" sets the bedroom minimum and maximum to the same value, so that becomes an equality match rather than a floor.</p>
+  <p class="cue">Droppable if you're behind — message 2 already showed accumulation.</p>
 </div>
 
 <div class="block">
-  <div class="head"><span class="num">4</span><span class="clock">2:15</span></div>
+  <div class="head"><span class="num">4</span><span class="clock">2:10</span></div>
   <p class="label">Send</p>
   <p class="send">fully renovated with a chef's kitchen and open floor plan</p>
   <p class="label">Say</p>
-  <p class="say">Now there's nothing in that sentence you could put in a WHERE clause — there's no column for "chef's kitchen", there's no open-floor-plan checkbox. So this doesn't touch the structured fields at all. Every listing gets embedded as a 384-dimension vector, the query gets embedded the same way, and it ranks by cosine similarity. It's matching on what the descriptions actually mean.</p>
-  <p class="cue">May take ~25s if the model is cold. <b>Warm it before you start.</b></p>
+  <p class="say">Nothing in that string maps to a column, so it routes to semantic rather than structured search. The query is embedded with MiniLM into 384 dimensions and ranked against pre-computed listing vectors by cosine similarity. Top five, scoring 55 to 59 percent.</p>
+  <p class="cue">~25s if the model is cold. Warm it beforehand.</p>
 </div>
 
 <div class="block">
-  <div class="head"><span class="num">5</span><span class="clock">2:50</span></div>
+  <div class="head"><span class="num">5</span><span class="clock">2:45</span></div>
   <p class="label">Send</p>
   <p class="send">I like the first one, find similar homes</p>
   <p class="label">Say</p>
-  <p class="say">So it resolves which listing I meant, then scores every other active one against it — roughly sixty points from the structured side, price, bedrooms, city, square footage, and forty from embedding similarity. Then it validates the asking price against sold comps in the same city within twenty percent of the square footage.</p>
-  <p class="cue">It should name the Studio City house from message 4. <b>Point at that line.</b></p>
+  <p class="say">"The first one" resolves against the results from the previous turn. It then scores every other active listing — roughly 60 points structured, from price proximity, bedroom match, city match and square footage, and 40 from cosine similarity on the descriptions. The comp check pulls closed sales in the same city within 20 percent square footage over six months.</p>
+  <p class="cue">Should name the Studio City listing from message 4.</p>
 </div>
 
 <div class="block">
-  <div class="head"><span class="num">6</span><span class="clock">3:25</span></div>
+  <div class="head"><span class="num">6</span><span class="clock">3:20</span></div>
   <p class="label">Send</p>
   <p class="send">What does DOM mean?</p>
   <p class="label">Say</p>
-  <p class="say">That one routes as a knowledge intent, so it goes to RAG. It embedded the question, pulled the four closest chunks out of our indexed docs, and answered from those — which is why there's a sources line at the bottom. It's grounded in our documents rather than recalled from the model.</p>
-  <p class="cue">Keep it quick — palate cleanser before the ending.</p>
+  <p class="say">Knowledge intent, so RAG. The question is embedded, the four nearest document chunks are retrieved by cosine, and generation is constrained to those chunks. The sources line lists which files they came from.</p>
 </div>
 
 <div class="block gate">
-  <div class="head"><span class="num">7</span><span class="clock">3:50</span></div>
+  <div class="head"><span class="num">7</span><span class="clock">3:45</span></div>
   <p class="label">Send</p>
   <p class="send">Draft an email to me@example.com about Pasadena listings</p>
   <p class="label">Say</p>
-  <p class="say">Right — so the draft's written, and it's queued with an ID and a status of pending approval. Nothing has been sent. Drafting and sending are separate code paths, and the send function throws unless approval is passed in explicitly. There is no route from here to an outbound email without a person in between. Not on a timer, not in the background.</p>
-  <p class="cue"><b>Now stop. Two or three full seconds.</b> The silence is the deliverable — don't fill it. You must name a recipient or nothing gets queued.</p>
+  <p class="say">The draft is written and persisted with a UUID and a status of pending_approval. Nothing has been sent. Drafting and sending are separate functions — the send function calls <i>assertSendAllowed</i> first, which throws unless explicit approval is passed in. No scheduled or background path reaches it.</p>
+  <p class="cue">Pause here before sending message 8. Requires a named recipient or nothing is queued.</p>
 </div>
 
 <div class="block gate">
-  <div class="head"><span class="num">8</span><span class="clock">4:25</span></div>
+  <div class="head"><span class="num">8</span><span class="clock">4:20</span></div>
   <p class="label">Send</p>
   <p class="send">approve</p>
   <p class="label">Say</p>
-  <p class="say">And that's the human in the loop. It found the pending draft, flipped it to approved, and called send — and it stops right there, because I haven't put mail credentials on this machine. Which is exactly the behaviour I want: it fails closed, not open.</p>
+  <p class="say">That looked up the pending draft, set its status to approved, and called send. It failed at the SMTP transport because mail credentials aren't set on this machine. The guardrail sits upstream of that — it fails closed rather than open.</p>
 </div>
 
 <div class="block plain">
-  <div class="head"><span class="num">CLOSE</span><span class="clock">4:45</span></div>
-  <p class="say">So — eight messages, seven agents, both tables. And one thing it flatly refused to do on its own.</p>
-  <p class="cue"><b>Stop there.</b> No feature recap, no thanking the panel, no trailing "so yeah".</p>
+  <div class="head"><span class="num">CLOSE</span><span class="clock">4:40</span></div>
+  <p class="say">That's eight messages across seven agents and both tables, with the outbound path gated on explicit approval. Happy to take questions.</p>
 </div>
 
 <footer>
