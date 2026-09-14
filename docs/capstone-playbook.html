@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IDX Capstone Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&display=swap">
+<style>
+  :root {
+    --ground: #f4f6f7;
+    --surface: #ffffff;
+    --surface-2: #eaeef0;
+    --ink: #16202a;
+    --muted: #576875;
+    --line: #dbe2e6;
+    --accent: #1a6b66;
+    --accent-soft: #e0eeed;
+    --signal: #9d5d17;
+    --signal-soft: #f7ecdd;
+
+    --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e141a;
+      --surface: #151e25;
+      --surface-2: #1c262e;
+      --ink: #e5ecf0;
+      --muted: #91a2af;
+      --line: #26323b;
+      --accent: #57b4ad;
+      --accent-soft: #12302d;
+      --signal: #d9a25e;
+      --signal-soft: #2d2215;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0e141a;
+    --surface: #151e25;
+    --surface-2: #1c262e;
+    --ink: #e5ecf0;
+    --muted: #91a2af;
+    --line: #26323b;
+    --accent: #57b4ad;
+    --accent-soft: #12302d;
+    --signal: #d9a25e;
+    --signal-soft: #2d2215;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 56px 96px;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 28px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(34px, 6.5vw, 50px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    margin-top: 26px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .facts b { color: var(--ink); font-weight: 500; }
+
+  /* ---------- sections ---------- */
+
+  section { margin-top: 64px; }
+
+  .sec-head { margin-bottom: 26px; }
+
+  .sec-kicker {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(24px, 4vw, 31px);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+
+  .sec-note { color: var(--muted); margin: 0; max-width: 66ch; font-size: 15.5px; }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+    color: var(--ink);
+  }
+
+  /* ---------- reflection ---------- */
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 34px;
+  }
+
+  .col-mark {
+    display: inline-block;
+    width: 26px;
+    height: 3px;
+    margin-bottom: 12px;
+    background: var(--accent);
+  }
+  .col-mark.warn { background: var(--signal); }
+
+  ul.notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+
+  ul.notes li { padding-left: 16px; border-left: 2px solid var(--line); }
+
+  ul.notes b {
+    display: block;
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 3px;
+  }
+
+  ul.notes span { color: var(--muted); font-size: 14.5px; display: block; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.87em;
+    background: var(--surface-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .throughline {
+    margin-top: 34px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 22px 24px;
+  }
+  .throughline p { margin: 0; font-size: 15.5px; max-width: 62ch; }
+  .throughline p + p { margin-top: 12px; }
+  .throughline strong { font-weight: 600; }
+
+  /* ---------- timed sequences ---------- */
+
+  ol.seq { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 20px 22px;
+  }
+  .step + .step { border-top: none; }
+
+  .clock {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    padding-top: 2px;
+    letter-spacing: -0.01em;
+  }
+
+  .step-body > * + * { margin-top: 10px; }
+
+  .msg {
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.5;
+    background: var(--surface-2);
+    padding: 11px 14px;
+    border-radius: 3px 12px 12px 12px;
+    margin: 0;
+  }
+  .msg::before {
+    content: "you →";
+    color: var(--muted);
+    margin-right: 8px;
+    font-size: 12px;
+  }
+
+  .line { margin: 0; font-size: 14.5px; display: flex; gap: 10px; }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    flex: 0 0 46px;
+    padding-top: 4px;
+  }
+  .line > span:last-child { flex: 1; }
+  .line em { font-style: normal; color: var(--muted); }
+
+  .say { color: var(--ink); }
+  .say q { font-style: italic; }
+
+  .step.gate { border-left: 3px solid var(--signal); background: var(--signal-soft); }
+  .step.gate .clock { color: var(--signal); }
+
+  .beat {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    gap: 20px;
+    padding: 14px 22px;
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+  .beat .clock { color: var(--muted); }
+
+  /* ---------- video segments ---------- */
+
+  .segs { display: grid; gap: 2px; }
+
+  .seg {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 18px 22px;
+  }
+  .seg + .seg { border-top: none; }
+  .seg h4 {
+    font-family: var(--sans);
+    font-size: 15.5px;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .seg p { margin: 0; color: var(--muted); font-size: 14.5px; }
+  .seg p + p { margin-top: 8px; }
+  .seg .onscreen {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--accent);
+  }
+
+  /* ---------- callout ---------- */
+
+  .caution {
+    margin-top: 26px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--signal);
+    background: var(--surface);
+    padding: 20px 22px;
+  }
+  .caution h3 { color: var(--signal); }
+  .caution ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
+  .caution li { font-size: 14.5px; color: var(--muted); }
+  .caution li b { color: var(--ink); font-weight: 600; }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+  footer p { margin: 0; max-width: 66ch; }
+
+  @media (max-width: 560px) {
+    .step, .seg, .beat { grid-template-columns: 1fr; gap: 12px; }
+    .clock { padding-top: 0; }
+    .line { flex-direction: column; gap: 2px; }
+    .tag { padding-top: 0; }
+  }
+</style>
+
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">IDX Exchange · Agentic AI Track · Team monKeypas</p>
+    <h1>Capstone Playbook</h1>
+    <p class="standfirst">Material for the written reflection, a segment plan for the backup video, and a minute-by-minute script for the five-minute live demo.</p>
+    <div class="facts">
+      <span><b>10</b> required features</span>
+      <span><b>7</b> agents · <b>8</b> routes</span>
+      <span><b>2</b> MLS tables</span>
+      <span><b>105</b> tests passing</span>
+    </div>
+  </header>
+
+  <!-- ============ REFLECTION ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-kicker">Deliverable 6</span>
+      <h2>Reflection material</h2>
+      <p class="sec-note">Raw material, not prose — each bullet is a concrete thing that happened, with the point it supports. Pick the five or six that feel truest and write them in your own voice.</p>
+    </div>
+
+    <div class="columns">
+      <div>
+        <span class="col-mark"></span>
+        <h3>What worked</h3>
+        <ul class="notes">
+          <li><b>One skill per week, each independently runnable</b><span>Every deliverable had its own <code>SKILL.md</code>, npm script, and tests. Nothing was blocked waiting on anything else, and any week could be demoed alone.</span></li>
+          <li><b>Tests target pure functions, so they run anywhere</b><span>Query <em>builders</em> return <code>{sql, params}</code>; formatters and the classifier take strings. 105 tests, no database, no mocks, no network — the suite runs on a laptop with no credentials.</span></li>
+          <li><b>Guardrails that fail closed</b><span><code>assertSendAllowed</code> throws unless approval is explicit. When SMTP was unconfigured it refused to send rather than erroring halfway — the draft stayed queued and approved.</span></li>
+          <li><b>Local embeddings by default</b><span>MiniLM on-device meant no API quota, no key required, and reproducible results. Gemini stayed available behind one env var.</span></li>
+          <li><b>The embedding cache knows what built it</b><span>Stamped with model and dimensions, so switching providers fails fast with a clear message instead of silently comparing 384-d vectors to 768-d ones.</span></li>
+          <li><b>Range-shaped filters made multi-turn possible</b><span><code>bedsMin</code>/<code>bedsMax</code> and <code>minPrice</code>/<code>maxPrice</code> let a follow-up merge over a previous turn. Scalar fields would have forced a restart every message.</span></li>
+          <li><b>One parameterized query path</b><span>Every table read goes through <code>query(sql, params)</code> with <code>?</code> placeholders. No user input is ever interpolated into SQL.</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <span class="col-mark warn"></span>
+        <h3>What I'd change</h3>
+        <ul class="notes">
+          <li><b>The orchestrator arrived too late</b><span>Built at Week 9, after six skills already existed. Three required features turned out to be unreachable through it — semantic search was never registered as an agent at all. The skill worked perfectly and no user could get to it.</span></li>
+          <li><b>A regex quietly gated working code</b><span><code>\bbedroom\b</code> doesn't match "bedrooms". The parser handled plurals fine; the classifier in front of it didn't, so "3 bedrooms" hit the fallback message. Invisible until the routing was tested directly.</span></li>
+          <li><b>Two implementations of the same feature drifted</b><span>The CLI email agent persisted drafts with ids and an approval gate. The WhatsApp one was a string formatter that appended "Draft only". Same feature name, no shared code, only one of them complete.</span></li>
+          <li><b>Four byte-identical copies of <code>mysql.ts</code></b><span>Copy-paste was faster each week and now a one-line fix has to land in four places.</span></li>
+          <li><b>Dead code that still looks authoritative</b><span><code>toRetsFilters()</code> was the Week 2 database mapping. Week 3 replaced it with a fuller clause builder, but it stayed exported and still reads like the real path.</span></li>
+          <li><b>Typecheck wasn't in the loop</b><span>Vitest transpiles without checking types, so five real type errors sat green behind a passing suite for weeks.</span></li>
+          <li><b>Learned the schema through bugs</b><span>Two tables, two naming conventions — <code>L_City</code> vs <code>City</code>, <code>L_Keyword2</code> vs <code>BedroomsTotal</code>. An hour reading columns first would have saved more than an hour of debugging empty result sets.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="throughline">
+      <p><strong>A throughline, if you want one.</strong> Almost everything in the right-hand column is the same failure in different clothes: a capability existed and worked, but nothing connected a user to it. Semantic search had no agent. Approval had no route. The parser understood "bedrooms" but its gatekeeper didn't.</p>
+      <p>The lesson isn't "write more tests" — the skills were well tested. It's that <strong>integration is a feature, not glue</strong>, and it needs to be built and tested alongside each capability rather than assembled at the end.</p>
+    </div>
+  </section>
+
+  <!-- ============ VIDEO ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-kicker">Deliverable 5 · roughly 8 minutes</span>
+      <h2>Backup video</h2>
+      <p class="sec-note">No clock pressure here, so this is where the architecture, the schema work, and the scoring internals go — everything the live slot can't afford. Record it <em>after</em> you rehearse the live demo, so the demo segment is already smooth.</p>
+    </div>
+
+    <div class="segs">
+      <div class="seg">
+        <div class="clock">0:00</div>
+        <div>
+          <h4>What it is</h4>
+          <p>One sentence: a WhatsApp assistant that answers real-estate questions by routing them across seven agents and two MLS databases. Name the ten features once, quickly — don't demo them yet.</p>
+          <p class="onscreen">on screen: README</p>
+        </div>
+      </div>
+
+      <div class="seg">
+        <div class="clock">0:30</div>
+        <div>
+          <h4>Architecture</h4>
+          <p>Walk the flow diagram top to bottom: message arrives, <code>classifyIntent</code> picks an intent, one or two agents run, each agent owns a skill, skills hit the tables. Point out that a mixed query fans out to two agents in parallel and touches both databases on one turn.</p>
+          <p class="onscreen">on screen: docs/architecture.md</p>
+        </div>
+      </div>
+
+      <div class="seg">
+        <div class="clock">2:00</div>
+        <div>
+          <h4>The two databases</h4>
+          <p>This is your strongest technical segment and the one nobody else will have. The tables don't share a naming convention: <code>L_City</code> vs <code>City</code>, <code>L_Keyword2</code> for bedrooms, <code>LM_Dec_3</code> for bathrooms. The <code>*YN</code> amenity flags are strings — <code>'True'</code>, <code>'1'</code>, <code>'Yes'</code> — so a naive <code>= true</code> silently drops most matches.</p>
+          <p>Show <code>ynClause()</code> handling all three spellings. That's the moment the schema work pays off on camera.</p>
+          <p class="onscreen">on screen: docs/schema-annotation.md, then mlsSearch.ts</p>
+        </div>
+      </div>
+
+      <div class="seg">
+        <div class="clock">3:30</div>
+        <div>
+          <h4>The full chain, uncut</h4>
+          <p>Run the same eight messages from the live script, start to finish, without narrating over the top. This is the segment that saves you if the live demo goes wrong, so let it play clean.</p>
+          <p class="onscreen">on screen: WhatsApp</p>
+        </div>
+      </div>
+
+      <div class="seg">
+        <div class="clock">6:00</div>
+        <div>
+          <h4>Under the hood</h4>
+          <p>Two things worth opening: the hybrid recommendation score (structured similarity plus 40 points of cosine, validated against sold comps within ±20% square footage), and the routing precedence — why approval is checked before drafting, and why structured filters beat descriptive search.</p>
+          <p class="onscreen">on screen: hybridScore.ts, classifyIntent.ts</p>
+        </div>
+      </div>
+
+      <div class="seg">
+        <div class="clock">7:00</div>
+        <div>
+          <h4>The safety gate</h4>
+          <p>Show <code>assertSendAllowed</code> and say plainly what it guarantees: there is no code path that sends an email without explicit human approval — not from a draft turn, not from a heartbeat. Mention the 50-row cap and the credential redaction while you're in the file.</p>
+          <p class="onscreen">on screen: guardrails.ts</p>
+        </div>
+      </div>
+
+      <div class="seg">
+        <div class="clock">7:45</div>
+        <div>
+          <h4>What I'd change</h4>
+          <p>Thirty seconds, one point. The orchestrator arrived at Week 9 and three working features turned out to be unreachable through it. Integration is a feature. End there.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LIVE ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-kicker">Deliverable 4 · five minutes</span>
+      <h2>Live demo script</h2>
+      <p class="sec-note">Eight messages, each doing more than one job. Times are cumulative and leave about twenty seconds of slack. Every intent below is pinned by a test, so the routing is the part least likely to surprise you.</p>
+    </div>
+
+    <ol class="seq">
+      <li class="beat">
+        <div class="clock">0:00</div>
+        <div><b>Opening, ~60 seconds.</b> What it is and what it queries (<code>rets_property</code> active, <code>california_sold</code> closed); one entry point, a classifier, seven agents across eight routes; then the method behind each — English compiled to parameterized SQL, 384-dimension embeddings ranked by cosine, hybrid scoring at roughly 60/40, retrieval for knowledge. Close on the hook: <q>the last one is the one it won't send by itself.</q> Diagram on screen, not narrated. Full wording in <code>how-it-works.html</code>.</div>
+      </li>
+
+      <li class="step">
+        <div class="clock">0:45</div>
+        <div class="step-body">
+          <p class="msg">Find me affordable homes in Pasadena and tell me whether prices are rising</p>
+          <p class="line"><span class="tag">shows</span><span>Orchestration, parallel agents, property search <em>and</em> market analytics, both tables — in one message.</span></p>
+          <p class="line say"><span class="tag">say</span><span><q>That's one message hitting two agents in parallel — active listings from one table, closed sales from another — and merging the reply.</q></span></p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="clock">1:30</div>
+        <div class="step-body">
+          <p class="msg">Under $1.2M</p>
+          <p class="line"><span class="tag">shows</span><span>Session memory — the city carries over with no restating.</span></p>
+          <p class="line say"><span class="tag">say</span><span><q>I never said Pasadena again.</q></span></p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="clock">1:50</div>
+        <div class="step-body">
+          <p class="msg">Only 3 bedrooms</p>
+          <p class="line"><span class="tag">shows</span><span>Filters stacking across turns rather than replacing each other.</span></p>
+          <p class="line say"><span class="tag">say</span><span>Keep this short — it's proof, not a feature tour. <em>If you're running behind, this is the one to drop: message 2 already proved memory works.</em></span></p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="clock">2:05</div>
+        <div class="step-body">
+          <p class="msg">charming craftsman with mountain views</p>
+          <p class="line"><span class="tag">shows</span><span>Semantic search over <code>L_Remarks</code> embeddings.</span></p>
+          <p class="line say"><span class="tag">say</span><span><q>No filters in that sentence — nothing to put in a WHERE clause. This is cosine similarity over the agent remarks.</q></span></p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="clock">2:40</div>
+        <div class="step-body">
+          <p class="msg">I like the first one, find similar homes</p>
+          <p class="line"><span class="tag">shows</span><span>Recommendations plus comp validation against closed sales.</span></p>
+          <p class="line say"><span class="tag">say</span><span><q>Structured similarity and embedding similarity combined, then priced against comps within twenty percent of its square footage.</q></span></p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="clock">3:15</div>
+        <div class="step-body">
+          <p class="msg">What does DOM mean?</p>
+          <p class="line"><span class="tag">shows</span><span>RAG grounded in indexed documents, with sources.</span></p>
+          <p class="line say"><span class="tag">say</span><span><q>Retrieved from indexed docs, not generated from memory — note the sources line.</q></span></p>
+        </div>
+      </li>
+
+      <li class="step gate">
+        <div class="clock">3:40</div>
+        <div class="step-body">
+          <p class="msg">Draft an email about Pasadena listings</p>
+          <p class="line"><span class="tag">shows</span><span>Drafting — returns a preview and a draft id, and sends nothing.</span></p>
+          <p class="line say"><span class="tag">say</span><span><q>Nothing has been sent. It's queued as pending approval, and there is no code path that sends it without me saying so.</q> <em>Then pause. The silence is the deliverable.</em></span></p>
+        </div>
+      </li>
+
+      <li class="step gate">
+        <div class="clock">4:15</div>
+        <div class="step-body">
+          <p class="msg">approve</p>
+          <p class="line"><span class="tag">shows</span><span>The gate closing — the send happens only now.</span></p>
+          <p class="line say"><span class="tag">say</span><span><q>That's the human in the loop. One word, and only now does it send.</q></span></p>
+        </div>
+      </li>
+
+      <li class="beat">
+        <div class="clock">4:40</div>
+        <div>Close on the throughline, not a feature list — <q>eight messages, seven agents, both databases, and one thing that deliberately refused to happen on its own.</q></div>
+      </li>
+    </ol>
+
+    <div class="caution">
+      <h3>If it goes wrong</h3>
+      <ul>
+        <li><b>"I'm not sure how to help with that"</b> — the classifier returned unknown. Rephrase with a concrete noun rather than repeating yourself.</li>
+        <li><b>A semantic or recommendation query hangs</b> — cold model or unbuilt cache. Move to the RAG question and come back.</li>
+        <li><b>Approval says sending failed</b> — mail credentials aren't set. Say so and move on: the guardrail refused to fail open, which is the behaviour you're demonstrating.</li>
+        <li><b>Empty results</b> — Pasadena and Irvine are the safest cities in this dataset.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <p>Pre-flight steps — index builds, warming the embedding model, clearing the session store — are in <code>docs/capstone-demo-runbook.md</code>. Run them before you rehearse, and rehearse against the live database at least once: the routing is tested, but the data isn't.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

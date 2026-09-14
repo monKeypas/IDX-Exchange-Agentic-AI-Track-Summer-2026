@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How It Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&display=swap">
+<style>
+  :root {
+    --ground: #f4f6f7;
+    --surface: #ffffff;
+    --surface-2: #eaeef0;
+    --ink: #16202a;
+    --muted: #576875;
+    --line: #dbe2e6;
+    --accent: #1a6b66;
+    --accent-soft: #e0eeed;
+    --signal: #9d5d17;
+    --signal-soft: #f7ecdd;
+    --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e141a; --surface: #151e25; --surface-2: #1c262e;
+      --ink: #e5ecf0; --muted: #91a2af; --line: #26323b;
+      --accent: #57b4ad; --accent-soft: #12302d;
+      --signal: #d9a25e; --signal-soft: #2d2215;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e141a; --surface: #151e25; --surface-2: #1c262e;
+    --ink: #e5ecf0; --muted: #91a2af; --line: #26323b;
+    --accent: #57b4ad; --accent-soft: #12302d;
+    --signal: #d9a25e; --signal-soft: #2d2215;
+  }
+
+  body {
+    background: var(--ground); color: var(--ink);
+    font-family: var(--sans); font-size: 16px; line-height: 1.65;
+    -webkit-font-smoothing: antialiased; margin: 0;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding-inline: 20px; padding-block: 56px 96px; }
+
+  .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 26px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 14px;
+  }
+  h1 {
+    font-family: var(--serif); font-size: clamp(32px, 6vw, 46px); line-height: 1.05;
+    letter-spacing: -0.02em; margin: 0 0 16px; text-wrap: balance;
+  }
+  .standfirst { font-size: 17px; color: var(--muted); max-width: 60ch; margin: 0; }
+
+  section { margin-top: 60px; }
+  .sec-kicker {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 8px;
+  }
+  h2 {
+    font-family: var(--serif); font-size: clamp(23px, 4vw, 30px); line-height: 1.15;
+    letter-spacing: -0.015em; margin: 0 0 18px; text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--sans); font-size: 17px; font-weight: 600;
+    margin: 34px 0 8px; text-wrap: balance;
+  }
+  p { max-width: 66ch; margin: 0 0 14px; }
+  .lede { font-size: 17.5px; }
+
+  code {
+    font-family: var(--mono); font-size: 0.86em; background: var(--surface-2);
+    padding: 1px 5px; border-radius: 3px;
+  }
+
+  .idea {
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 22px 24px; margin-bottom: 2px;
+  }
+  .idea h3 { margin-top: 0; }
+  .idea p:last-child { margin-bottom: 0; }
+  .idea .plain {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+  }
+
+  .analogy {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    padding: 16px 20px; margin: 16px 0 0;
+  }
+  .analogy p { margin: 0; font-size: 15.5px; }
+
+  .say {
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 3px solid var(--accent); padding: 20px 22px; margin-bottom: 2px;
+  }
+  .say .msg {
+    font-family: var(--mono); font-size: 14px; background: var(--surface-2);
+    padding: 10px 13px; border-radius: 3px 12px 12px 12px; margin: 0 0 14px;
+    max-width: none;
+  }
+  .say .msg::before { content: "you → "; color: var(--muted); font-size: 12px; }
+  .say .quote { font-size: 15.5px; margin: 0 0 12px; }
+  .say .quote::before { content: "“"; color: var(--accent); }
+  .say .quote::after { content: "”"; color: var(--accent); }
+  .say .why {
+    font-size: 14.5px; color: var(--muted); margin: 0;
+    padding-top: 12px; border-top: 1px solid var(--line);
+  }
+  .say .why b { color: var(--ink); font-weight: 600; }
+  .say.gate { border-left-color: var(--signal); background: var(--signal-soft); }
+  .say.gate .quote::before, .say.gate .quote::after { color: var(--signal); }
+
+  details {
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 16px 20px; margin-bottom: 2px;
+  }
+  details[open] { padding-bottom: 20px; }
+  summary {
+    font-weight: 600; cursor: pointer; font-size: 15.5px;
+    list-style: none; display: flex; gap: 10px; align-items: baseline;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "?"; font-family: var(--mono); color: var(--accent); font-weight: 500; }
+  summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  details p { font-size: 15px; margin: 12px 0 0; color: var(--muted); }
+  details p:first-of-type { margin-top: 14px; }
+  details b { color: var(--ink); font-weight: 600; }
+
+  .warn {
+    border: 1px solid var(--line); border-left: 3px solid var(--signal);
+    background: var(--surface); padding: 20px 22px; margin-top: 26px;
+  }
+  .warn p:last-child { margin-bottom: 0; }
+
+  footer {
+    margin-top: 72px; padding-top: 22px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 13.5px;
+  }
+
+  .trace { counter-reset: tr; display: grid; gap: 2px; margin: 18px 0 0; padding: 0; list-style: none; }
+  .trace li {
+    counter-increment: tr; background: var(--surface); border: 1px solid var(--line);
+    padding: 14px 18px 14px 52px; position: relative; font-size: 15px; max-width: none;
+  }
+  .trace li::before {
+    content: counter(tr); position: absolute; left: 18px; top: 14px;
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+  }
+  .trace li b { font-weight: 600; }
+  .formula {
+    font-family: var(--mono); font-size: 13.5px; background: var(--surface-2);
+    padding: 16px 18px; margin: 16px 0; overflow-x: auto; line-height: 1.75;
+    white-space: pre; tab-size: 2;
+  }
+  .formula.wrap-ok { white-space: pre-wrap; }
+  .formula .bad { color: var(--signal); }
+  .formula .cmt { color: var(--muted); }
+  .step-note { font-size: 14.5px; color: var(--muted); }
+  table.tbl {
+    width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14.5px;
+  }
+  table.tbl th, table.tbl td {
+    text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top;
+  }
+  table.tbl th {
+    font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600;
+  }
+  table.tbl td:first-child { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+  .tbl-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">IDX Exchange · Agentic AI Track · Team monKeypas</p>
+  <h1>How It Works</h1>
+  <p class="standfirst">What the project actually is, in plain language — then the words to say during the demo, and answers to the questions you're most likely to get.</p>
+</header>
+
+<!-- ================= WHAT IT IS ================= -->
+<section>
+  <span class="sec-kicker">Start here</span>
+  <h2>What you built, in one paragraph</h2>
+  <p class="lede">It's a real-estate assistant you talk to over WhatsApp. You text it in ordinary English — <em>"find me 3-bedroom homes in Pasadena under $1.2 million"</em> — and it works out what you're asking, looks up real listings in a database, and texts back an answer. It handles eight different kinds of question, remembers the conversation so you can refine your search one message at a time, and can write an email for you. It will never send that email until you personally say the word.</p>
+  <p>If you can say that paragraph and then explain the six ideas below, you can carry the whole presentation. Everything else is detail.</p>
+</section>
+
+<!-- ================= THE IDEAS ================= -->
+<section>
+  <span class="sec-kicker">The six ideas</span>
+  <h2>What's actually going on</h2>
+
+  <div class="idea">
+    <p class="plain">Idea 1 — Skills</p>
+    <h3>Six specialists, each with one job</h3>
+    <p>Rather than one big program that does everything, the project is split into six <b>skills</b>. One searches listings. One does market statistics. One finds similar homes. One does meaning-based search. One answers definition questions. One writes emails.</p>
+    <p>A skill is just a folder containing some code and a description file (<code>SKILL.md</code>) that explains what it does and how to run it.</p>
+    <div class="analogy"><p><b>Analogy:</b> a firm where each person handles one type of request. Nobody does everything; everyone is good at their one thing.</p></div>
+  </div>
+
+  <div class="idea">
+    <p class="plain">Idea 2 — The orchestrator</p>
+    <h3>Something has to decide who answers</h3>
+    <p>When a message arrives, a function called <code>classifyIntent</code> reads it and decides which specialist should handle it. It looks for signals: words like "find" or "3 bedroom" mean a property search; words like "market" or "prices rising" mean statistics; "what does X mean" means a definition question.</p>
+    <p>If a message asks two things at once — <em>"find me homes AND tell me if prices are rising"</em> — it sends the message to two specialists <b>at the same time</b> and combines their answers into one reply.</p>
+    <div class="analogy"><p><b>Analogy:</b> the receptionist who reads your request and routes you to the right desk — and occasionally to two desks at once.</p></div>
+  </div>
+
+  <div class="idea">
+    <p class="plain">Idea 3 — Two databases</p>
+    <h3>What's for sale vs. what actually sold</h3>
+    <p><code>rets_property</code> holds homes <b>currently for sale</b>. <code>california_sold</code> holds homes that have <b>already sold</b>.</p>
+    <p>You need both because they answer different questions. "Show me 3-bedroom condos" is about what's available now. "Are prices rising?" or "is this listing overpriced?" can only be answered from what things actually sold for.</p>
+    <p>The irritating part — and a good thing to mention — is that the two tables name the same things differently. City is <code>L_City</code> in one and just <code>City</code> in the other. Bedrooms are <code>L_Keyword2</code> in one and <code>BedroomsTotal</code> in the other. That mismatch caused real bugs.</p>
+  </div>
+
+  <div class="idea">
+    <p class="plain">Idea 4 — Embeddings</p>
+    <h3>Turning meaning into numbers</h3>
+    <p>A normal database search matches words. Ask for "cozy cottage" and a listing described as "charming bungalow" won't come back — no words in common — even though it's exactly what you meant.</p>
+    <p>An <b>embedding</b> fixes that. A model reads a piece of text and turns it into a list of 384 numbers, arranged so that text with similar <em>meaning</em> ends up with similar numbers. Compare two of these lists mathematically (that's <b>cosine similarity</b>) and you get a score for how alike they mean.</p>
+    <p>The project does this to <code>L_Remarks</code> — the agent's written description of each home. So "charming craftsman with mountain views" finds listings that <em>read</em> like that, even with no matching words.</p>
+    <div class="analogy"><p><b>Analogy:</b> giving every listing a location on a giant map of meaning, then asking "what's nearest to this spot?"</p></div>
+  </div>
+
+  <div class="idea">
+    <p class="plain">Idea 5 — RAG</p>
+    <h3>Look it up before answering</h3>
+    <p>Language models will confidently invent answers. RAG — retrieval-augmented generation — stops that by making the model read the source first.</p>
+    <p>Your reference documents get chopped into ~900-character chunks and embedded (same trick as above). When someone asks "what does DOM mean?", the system finds the 4 chunks closest in meaning to the question, hands them to the model, and says: <em>answer using only this.</em></p>
+    <p>That's why the reply lists its sources — and why it can say it doesn't know instead of making something up.</p>
+  </div>
+
+  <div class="idea">
+    <p class="plain">Idea 6 — The approval gate</p>
+    <h3>The part that deliberately doesn't work automatically</h3>
+    <p>The assistant can write an email. It cannot send one on its own, ever. Drafting and sending are two separate steps with a human in the middle.</p>
+    <p>When you ask for an email, it writes one, saves it with an ID, and marks it <em>pending approval</em>. Nothing leaves. Only when a person replies "approve" does a second, separate piece of code send it — and that code refuses to run unless approval was explicit.</p>
+    <p>This is the single most important thing in the project. An assistant that can email people on your behalf without asking is genuinely dangerous, and the whole design treats that as non-negotiable.</p>
+  </div>
+</section>
+
+<!-- ================= THE ARC ================= -->
+<section>
+  <span class="sec-kicker">The story</span>
+  <h2>Why it was built in that order</h2>
+  <p>If someone asks how the project developed, this is the arc — each week solving a problem the previous week created.</p>
+  <p><b>Weeks 1–2</b> — Work out the shape of the system, then teach it to read English: turn "3-bedroom condo in Irvine under $1.5M" into structured filters a database can use.</p>
+  <p><b>Week 3</b> — Connect those filters to the real database and get actual listings back.</p>
+  <p><b>Week 4</b> — People don't ask one perfect question; they refine. So add memory, letting each message build on the last instead of starting over.</p>
+  <p><b>Week 5</b> — Searching isn't enough. "Should I buy now?" needs the sold-history table: medians, days on market, trends, inventory.</p>
+  <p><b>Week 6</b> — Some searches can't be expressed as filters at all. Embeddings handle description rather than specification.</p>
+  <p><b>Week 7</b> — Combine both: recommend similar homes using structured similarity <em>and</em> meaning similarity, then sanity-check the price against real comparable sales.</p>
+  <p><b>Week 8</b> — Users ask questions that aren't searches at all ("what's escrow?"). RAG answers from documents rather than the database.</p>
+  <p><b>Weeks 9–10</b> — Six separate tools is not a product. The orchestrator makes them one assistant behind a single WhatsApp number.</p>
+  <p><b>Week 11</b> — Give it the ability to email, and immediately constrain it: draft, human approval, then send.</p>
+</section>
+
+<!-- ================= UNDER THE HOOD ================= -->
+<section>
+  <span class="sec-kicker">The mechanics</span>
+  <h2>Under the hood</h2>
+  <p>This section goes a level deeper on the pieces people ask about most. You don't need all of it to present — but knowing two or three of these properly is what separates "I can describe my project" from "I understand my project".</p>
+
+  <h3>1. How <code>classifyIntent</code> actually decides</h3>
+  <p>It's pattern matching, not AI. Six regular expressions each look for the vocabulary of one kind of request:</p>
+  <div class="formula">SEARCH    → find, show, homes, beds, bedrooms, condo, pool, under $ …
+MARKET    → market, median, trend, days on market, good time to buy …
+RECOMMEND → similar, recommend, homes like, i like …
+KNOWLEDGE → what does, what is, define, meaning of, escrow, cap rate …
+EMAIL     → email, draft, compose, write me an email …
+APPROVE   → approve, send it, confirm, ship it …</div>
+  <p>Each pattern is wrapped in <code>\b</code> — a <b>word boundary</b>, meaning "this must be a whole word". That's what stops "bedroom" from matching inside "bedrooms" — and it's exactly the bug that broke multi-turn refinement until the patterns were changed to <code>bedrooms?</code>, where the <code>?</code> makes the final "s" optional.</p>
+  <p><b>The order the checks run in is the real logic</b>, and every line of it is deliberate:</p>
+  <ol class="trace">
+    <li><b>Approval first.</b> "Send it" must never be read as a request to <em>write</em> an email. Approval acts on a draft that already exists, so it's checked before anything can create one.</li>
+    <li><b>Search + market together → mixed.</b> If a message trips both patterns, it isn't one or the other — it's both, and both agents run.</li>
+    <li><b>A question that asks what a term <em>means</em> is pulled away from market stats.</b> "DOM" stands for days on market, so it sits in the market vocabulary — which means "What does DOM mean?" trips the market pattern even though it's really a dictionary question. A guard catches that: if the sentence opens with "what does / what is / what are", treat it as a definition and ignore the market match, sending it to RAG instead.<br><br>The guard needs a second half, though, because plenty of real market questions also open that way — "What is the median price in Irvine?" is asking for a number, not a definition. So it only counts as definitional if the sentence contains <em>no</em> measurement words (average, median, price per, inventory, trend). Term question → RAG; number question → market stats.</li>
+    <li><b>Structured search beats descriptive search.</b> If real filters are present, use the database properly. Semantic search is the fallback for language that has no filters in it.</li>
+    <li><b>Anything left that's three or more words becomes semantic search</b> — unless it's a greeting, which is filtered out separately so "hey thanks" doesn't get treated as a property description.</li>
+  </ol>
+  <p class="step-note">Every one of those routes is locked down by a unit test, so changing a keyword can't silently re-route existing queries without a test failing.</p>
+
+  <h3>2. How English becomes a database query</h3>
+  <p><code>parsePropertyQuery</code> runs one regex per field and assembles a filter object. Money is the fiddliest part, because people write budgets a dozen ways:</p>
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>You type</th><th>It extracts</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>under $1.5M</td><td>maxPrice 1,500,000</td><td>"under" keyword, then "M" multiplies by a million</td></tr>
+      <tr><td>800k</td><td>maxPrice 800,000</td><td>"k" multiplies by a thousand</td></tr>
+      <tr><td>$900,000</td><td>maxPrice 900,000</td><td>commas stripped before parsing</td></tr>
+      <tr><td>between 2.5 and 3 million</td><td>min 2,500,000 / max 3,000,000</td><td>the unit on the second number is applied to the first</td></tr>
+      <tr><td>over 500k</td><td>minPrice 500,000</td><td>"over / at least / more than" set the floor instead</td></tr>
+      <tr><td>exactly 4 beds</td><td>bedsMin 4, bedsMax 4</td><td>equal bounds are how "exactly" is expressed</td></tr>
+    </tbody>
+  </table></div>
+  <p>City extraction is the one piece of genuine cleverness. It looks for "in &lt;something&gt;" but has to know where the city name <em>stops</em> — in "homes in Pasadena and tell me whether prices are rising", the city is Pasadena, not "Pasadena and tell me whether". So the pattern stops at a list of following words like <em>under, with, and, tell, between, built</em>. There's also a small blocklist rejecting non-cities like "bay area" and "any city", and the result gets title-cased, so "san jose" becomes "San Jose".</p>
+
+  <h3>3. How the database is asked, without letting users hijack it</h3>
+  <p><b>SQL</b> is the language for asking a database questions. A simple one looks like this:</p>
+  <div class="formula">SELECT * FROM rets_property WHERE L_City = 'Irvine'</div>
+  <p>"Give me every row from the listings table where the city is Irvine." Your filters have to be turned into a sentence like that. The obvious way to do it is to glue the user's words straight into the text — and that is exactly the dangerous way.</p>
+
+  <p><b>Why gluing is dangerous.</b> Suppose you build the sentence by pasting whatever the user typed where the city goes. Normally that's fine. But someone types this as their city:</p>
+  <div class="formula wrap-ok"><span class="bad">Irvine'; DROP TABLE rets_property; --</span></div>
+  <p>Glue that in and the database receives:</p>
+  <div class="formula wrap-ok">SELECT * FROM rets_property WHERE L_City = 'Irvine'<span class="bad">; DROP TABLE rets_property; --</span>'</div>
+  <p>You meant to ask one question. What arrived was a question <em>and a command to delete the table</em>. The database can't tell the difference, because by the time it sees the sentence, the user's text has become part of the instructions. That attack is called <b>SQL injection</b>, and it's one of the oldest ways to destroy or steal from a database.</p>
+
+  <p><b>The fix: leave blanks.</b> Instead of gluing values in, you write the sentence with <code>?</code> where each value belongs, and hand the values over separately:</p>
+  <div class="formula">the sentence:   SELECT * FROM rets_property WHERE L_City = ?
+the values:     ["Irvine"]</div>
+  <p>The database reads the sentence first and works out its shape — <em>this is a lookup, filtered by city</em> — and only then fills the blank. Whatever is in that blank is treated as a plain piece of text. If someone submits the malicious city above, the database dutifully searches for a city literally named <code>Irvine'; DROP TABLE…</code>, finds nothing, and returns zero rows. It is never read as a command.</p>
+  <div class="analogy"><p><b>Analogy:</b> a fill-in-the-blank form versus a blank sheet of paper. If you hand someone a contract with blanks, they can only fill the blanks. If you let them write the whole contract, they can add any clause they like.</p></div>
+
+  <p><b>How the code builds both halves at once.</b> It walks your filters one at a time. Each filter that has a value adds a blank to the sentence <em>and</em> adds its value to the list — always in the same order, so blank #1 matches value #1:</p>
+  <div class="formula"><span class="cmt">// starting point</span>
+sentence = "SELECT ... WHERE L_Status = 'Active'"
+values   = []
+
+<span class="cmt">// city is set → add a blank, add the value</span>
+sentence += " AND L_City = ?"          values.push("Pasadena")
+
+<span class="cmt">// max price is set → add another</span>
+sentence += " AND L_SystemPrice &lt;= ?"  values.push(1200000)
+
+<span class="cmt">// bedrooms is set → and another</span>
+sentence += " AND L_Keyword2 &gt;= ?"     values.push(3)</div>
+  <p>Filters you didn't mention are skipped entirely, so the sentence only ever contains conditions that matter. What finally goes to the database is:</p>
+  <div class="formula wrap-ok">SELECT ... WHERE L_Status = 'Active' AND L_City = ? AND L_SystemPrice &lt;= ? AND L_Keyword2 &gt;= ?
+["Pasadena", 1200000, 3]</div>
+  <p class="step-note">This is what "no string concatenation of user input" means, and it's why SQL injection isn't possible here — not because anything is being filtered or cleaned, but because user text never gets to be part of the instructions in the first place.</p>
+
+  <h3>3b. Why asking for a pool is more awkward than it should be</h3>
+  <p>You'd expect a "has a pool" column to hold true or false. It doesn't — it holds <em>text</em>, and the text isn't consistent. Across the data, the same "yes" shows up as <code>'True'</code>, as <code>'1'</code>, and as <code>'Yes'</code>.</p>
+  <p>So a check for one spelling quietly misses most of the matching homes — and it doesn't look like a bug, it looks like there just aren't many houses with pools. Every amenity check therefore asks for all three:</p>
+  <div class="formula wrap-ok">AND (PoolPrivateYN = 'True' OR PoolPrivateYN = '1' OR PoolPrivateYN = 'Yes')</div>
+  <p>The same applies to views, garages, fireplaces, and spas. It's a small thing, but it's a good example of real-world data being messier than the schema suggests — and a genuinely useful thing to mention if you're asked what surprised you.</p>
+
+  <h3>4. How the conversation remembers</h3>
+  <p>Each user gets a session keyed to their WhatsApp ID, holding the filters gathered so far. Every new message is parsed on its own, then <b>merged</b> onto what's stored — and the merge rule is deliberately simple: <em>anything the new message didn't mention is left alone.</em></p>
+  <p>So after "homes in Pasadena", the session holds a city. "Under $1.2M" parses to a price and nothing else, so the city survives. "Only 3 bedrooms" adds bedrooms, and both earlier values survive.</p>
+  <p>There's also a readiness check before searching. It won't run a query until it has a <b>location</b>, a <b>price bound</b>, and at least one <b>preference</b> — and if something's missing it asks for exactly that one thing rather than dumping thousands of listings or a generic "tell me more".</p>
+
+  <h3>5. What a transformer is</h3>
+  <p>A <b>transformer</b> is a type of neural network, invented in 2017, that essentially every modern language model is built on — ChatGPT, Claude, and the small model used here are all transformers of different sizes.</p>
+  <p>Its defining trick is called <b>attention</b>. When the model processes a word, it looks at all the other words in the passage and decides which ones matter for understanding <em>this</em> one. That's what makes it good at language, because words don't mean anything on their own:</p>
+  <div class="formula wrap-ok">"river <b>bank</b>"     → attention notices "river"  → a bank of earth
+"savings <b>bank</b>"   → attention notices "savings" → a financial institution</div>
+  <p>Same word, two completely different meanings, and the model produces a different set of numbers for each because it read the surrounding context. An older technique that assigned one fixed vector per word could never do that.</p>
+  <p>The model repeats this in <b>layers</b> — each layer takes the previous layer's output and refines it, so understanding builds up gradually. The name <code>all-MiniLM-L6-v2</code> tells you the size: <b>L6</b> means six layers. That's small — larger models have dozens — and small is exactly why it runs on a laptop in a fraction of a second instead of needing a server with a GPU.</p>
+
+  <h3>5b. From a listing to 384 numbers</h3>
+  <p>Yes — <b>every token gets its own 384-number vector.</b> That's the part your question was getting at, so here it is concretely.</p>
+  <p>The listing is first flattened into a paragraph: type, city, beds, baths, square footage, year, price, then the agent's written remarks. That paragraph is split into <b>tokens</b> — roughly word-pieces, so "craftsman" might be one token while an unusual word gets split into two or three.</p>
+  <p>Each token goes through the six layers and comes out as 384 numbers. So a listing of, say, 150 tokens produces a grid of 150 rows × 384 columns. Crucially, thanks to attention, <em>each of those rows already carries information about the whole passage</em>, not just its own word.</p>
+  <p>But you need <b>one</b> vector for the listing, not 150. That's what mean pooling does.</p>
+
+  <h3>5c. How the averaging actually works</h3>
+  <p>It averages <b>column by column</b>. The first number of the result is the average of every token's first number; the second is the average of every token's second number; and so on across all 384.</p>
+  <p>Here's the real operation on a toy version — 4 tokens, and 4 numbers each instead of 384:</p>
+  <div class="formula">                  1       2       3       4
+charming        0.8     0.1    -0.3     0.5
+craftsman       0.6     0.4    -0.1     0.2
+with            0.0     0.1     0.2     0.0
+views           0.2     0.9     0.4    -0.1
+                ────────────────────────────
+average         0.4    0.375   0.05    0.15   <span class="cmt">← the passage vector</span></div>
+  <p>Column 1: (0.8 + 0.6 + 0.0 + 0.2) ÷ 4 = <b>0.4</b>. Column 2: (0.1 + 0.4 + 0.1 + 0.9) ÷ 4 = <b>0.375</b>. And so on. Four rows go in, one row comes out — same width, no longer per-token.</p>
+  <p>The real thing is identical, just wider: 150 rows of 384 numbers averaged down to a single row of 384. Padding tokens (filler added to make batches the same length) are left out of the average so they don't drag it toward nothing.</p>
+  <div class="analogy"><p><b>Why averaging isn't as crude as it sounds:</b> because of attention, every token's vector has already absorbed context from the rest of the passage. You're not averaging 150 isolated word meanings — you're averaging 150 context-aware summaries, each of which already knows roughly what the passage is about.</p></div>
+
+  <h3>5d. Then it's scaled to length 1</h3>
+  <p>The last step divides every number by the vector's length, so the result always has a length of exactly 1. Continuing the same example:</p>
+  <div class="formula">average          0.4     0.375   0.05    0.15
+
+length  = √(0.4² + 0.375² + 0.05² + 0.15²) = 0.5706
+
+normalized      0.701   0.657   0.088   0.263   <span class="cmt">← length is now exactly 1</span></div>
+  <p>Every number shrank, but their <em>proportions</em> to one another didn't change at all — the vector still points in precisely the same direction, it's just a standard length now.</p>
+  <p>That matters because a 400-word listing description and a 40-word one would otherwise produce vectors of very different magnitudes, and the long one would dominate comparisons purely for being long. After normalizing, only direction — meaning — is left to compare.</p>
+  <p class="step-note">These 384 numbers are the listing's position on a map of meaning. They're computed once and cached to disk, which is why search is instant at demo time: the expensive work already happened during <code>embed:build</code>.</p>
+
+  <h3>6. What cosine similarity actually computes</h3>
+  <p>Given two vectors, it measures the <b>angle</b> between them — not the distance:</p>
+  <div class="formula">similarity(a, b) = (a · b) / (‖a‖ × ‖b‖)
+
+where  a · b  = a₁b₁ + a₂b₂ + … + a₃₈₄b₃₈₄   (the dot product)
+       ‖a‖    = √(a₁² + a₂² + … + a₃₈₄²)      (the vector's length)</div>
+  <p>The result runs from <b>1</b> (pointing the same way — nearly identical meaning) through <b>0</b> (unrelated) to <b>−1</b> (opposite). Dividing by both lengths is what cancels out magnitude, so only direction counts.</p>
+  <p>Angle is the right measure because a long, flowery description and a short blunt one can mean the same thing — they'd point the same way but have very different magnitudes. Straight-line distance would call them different; cosine correctly calls them similar.</p>
+  <p class="step-note">Because the vectors were already normalized to length 1, both denominators are 1, so this reduces to just the dot product. Searching compares the query against every cached listing one by one, sorts by score, and keeps the top 5 — a brute-force scan, which is perfectly fast at this dataset's size.</p>
+
+  <h3>7. How recommendations combine both approaches</h3>
+  <p>First it works out which home you meant — by matching an address if you gave one, otherwise by semantic search on your description. Then it scores <em>every other</em> listing out of 100:</p>
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>Points</th><th>For</th></tr></thead>
+    <tbody>
+      <tr><td>20 / 12 / 5</td><td>price within $50k / $150k / $300k</td></tr>
+      <tr><td>15</td><td>same bedroom count</td></tr>
+      <tr><td>15</td><td>same city</td></tr>
+      <tr><td>10 / 5</td><td>size within 300 / 700 sq ft</td></tr>
+      <tr><td>up to 40</td><td>cosine similarity × 40 — how alike the descriptions read</td></tr>
+    </tbody>
+  </table></div>
+  <p>So roughly 60 points of hard facts and 40 points of meaning. Top 5 by total score, then each is price-checked against homes that actually sold in that city within ±20% of its square footage over the last 6 months — turning "similar" into "similar, and fairly priced".</p>
+
+  <h3>8. What RAG is actually searching</h3>
+  <p>"Reference documents" sounds vague, so here is exactly what they are. Five Markdown files you wrote, sitting in <code>skills/rag/knowledge/</code>, totalling about 15,000 characters:</p>
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>File</th><th>Contains</th><th>Answers questions like</th></tr></thead>
+    <tbody>
+      <tr><td>real-estate-glossary.md</td><td>Plain-language definitions: DOM, escrow, comps, cap rate, list-to-close</td><td>"What does DOM mean?"</td></tr>
+      <tr><td>mls-field-definitions.md</td><td>Every column in both tables and what it holds</td><td>"What columns are in california_sold?"</td></tr>
+      <tr><td>ca-real-estate-law.md</td><td>California disclosures — TDS, natural hazard, seismic, lead paint, Megan's Law</td><td>"What is a natural hazard disclosure?"</td></tr>
+      <tr><td>market-reports.md</td><td>How to read the Week 5 metrics</td><td>"What does list-to-close tell me?"</td></tr>
+      <tr><td>idx-internal.md</td><td>How this product itself works — skills, tables, routing</td><td>"Which skill handles recommendations?"</td></tr>
+    </tbody>
+  </table></div>
+
+  <p><b>What a chunk is.</b> Those five files get sliced into <b>21 chunks</b> in total — pieces of about 900 characters each. Roughly a healthy paragraph. Here's a real one, the whole DOM entry from your glossary:</p>
+  <div class="formula wrap-ok">## DOM (Days on Market)
+
+DOM means Days on Market: how many days a listing was (or has been)
+publicly on the market. In `california_sold` the column is DaysOnMarket
+(time until the sale went pending/closed). In `rets_property`
+DaysOnMarket is the current listing's DOM; CumulativeDaysOnMarket sums
+across listing cycles. Lower DOM often signals stronger demand; higher
+DOM can mean a slower market or an overpriced listing.</div>
+  <p>Chunking exists because you can't hand a model 15,000 characters and expect a sharp answer — and you don't need to. Only the relevant paragraph matters. Slicing lets the system retrieve <em>just</em> the DOM entry rather than the entire glossary.</p>
+
+  <p><b>Why the pieces overlap.</b> The slices step forward 780 characters at a time but are 900 long, so each one repeats the last 120 characters of the one before. Without that, a definition unlucky enough to straddle a boundary would be cut in half — the first piece trailing off mid-sentence, the second starting mid-thought, and neither making sense alone. The overlap guarantees anything reasonably short lands intact in at least one chunk.</p>
+
+  <p><b>What "a question" means here.</b> Any message the router classified as <code>knowledge</code> — a definition or explanation request rather than a database lookup. "What does DOM mean?", "What is escrow?", "What's a cap rate?"</p>
+
+  <p><b>The whole thing, on one real question.</b></p>
+  <ol class="trace">
+    <li>Ahead of time, <code>npm run rag:index</code> turns each of the 21 chunks into 384 numbers — the same embedding process used for listings — and saves them to a file.</li>
+    <li>You send <b>"What does DOM mean?"</b> The router sees it opens with "what does" and carries no measurement words, so it routes to RAG.</li>
+    <li>The question itself is turned into 384 numbers the same way.</li>
+    <li>Cosine similarity compares the question's vector against all 21 chunk vectors. The glossary's DOM chunk scores highest — it's about the same thing. The <b>top 4</b> are kept.</li>
+    <li>Those 4 chunks are pasted into a prompt that says, in effect: <em>here is some reference text; answer the question using only this, and don't use outside knowledge.</em></li>
+    <li>The model writes the answer, and the reply lists which files it came from — which is why you see a sources line.</li>
+  </ol>
+  <p class="step-note">One extra touch worth knowing: if the question names a city, the system also fetches a <em>live</em> market summary from the Week 5 agent and adds it alongside the document chunks. So a question can be answered from your written docs and current database numbers at the same time.</p>
+
+  <p><b>Why go to all this trouble?</b> Ask a language model "what does DOM mean?" cold and it might say Document Object Model — correct in web development, useless here. Retrieval forces the answer to come from <em>your</em> glossary, in <em>your</em> domain. And if nothing relevant is found, it can say so rather than inventing something plausible.</p>
+  <p>If no API key is configured, it falls back to an extractive answer — lifting the most relevant sentences straight out of the chunks instead of writing prose. Less fluent, but it still cannot invent anything.</p>
+
+  <h3>9. How the email's contents are decided</h3>
+  <p><b>Nothing in the email is written by an AI.</b> Every word is either fixed text in a template or a value pulled straight from the database. That's deliberate: it means a draft physically cannot invent a listing or a price that doesn't exist.</p>
+  <p>Three things have to be decided — who it goes to, what the subject line says, and what fills the body.</p>
+
+  <p><b>The recipient.</b> If your message contains an email address, that's used. Otherwise it falls back to the configured <code>EMAIL_USER</code>, so a demo sends to yourself. If neither exists, it still shows you the draft but says plainly that it has nowhere to send it.</p>
+
+  <p><b>The subject.</b> A small regex looks for a topic after "about", "for", "on" or "regarding", capitalises it, and uses that:</p>
+  <div class="formula wrap-ok">"Draft an email <b>about Pasadena listings</b>"  →  Subject: Pasadena listings
+"Email me a summary"  (no topic found)     →  Subject: Property listings summary</div>
+
+  <p><b>The body — the WhatsApp path.</b> This is what the demo uses, and it's the pragmatic one. The agent checks your message for two kinds of keyword and gathers accordingly:</p>
+  <div class="formula wrap-ok">market words  (market, stats, trend, dom, price)  → run the market stats agent
+listing words (home, listing, property, condo)   → run the property search agent</div>
+  <p>Whichever fire, those agents run and <em>their existing replies become the body</em> — the same listing cards or market figures you'd have seen in the chat, collected into an email instead. If a message trips both, you get both sections. If it trips neither, it defaults to listings.</p>
+  <p class="step-note">So "draft an email about Pasadena listings" hits the listing keywords, runs a property search, and the email body is that search's results. Plain text, not HTML.</p>
+
+  <p><b>The body — the CLI path.</b> The email skill also has four purpose-built templates, chosen explicitly with <code>--type</code>, which produce proper styled HTML:</p>
+  <div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>Type</th><th>Gathers</th><th>Produces</th></tr></thead>
+    <tbody>
+      <tr><td>listing_alert</td><td>a property search from your query</td><td>a table of matching listings — address, price, beds/baths, sqft, photos, DOM</td></tr>
+      <tr><td>market_report</td><td>the full Week 5 analysis for a city</td><td>median and average close, $/sqft, DOM, list-to-close, inventory, plus six months of trend lines</td></tr>
+      <tr><td>property_summary</td><td>the single best-matching listing</td><td>one detailed card with a comps note</td></tr>
+      <tr><td>recommendation_digest</td><td>the top 5 recommendations</td><td>a numbered list of homes you may like</td></tr>
+    </tbody>
+  </table></div>
+  <p>These are ordinary string templates with the values substituted in. Three details worth noticing: every value is <b>HTML-escaped</b> before insertion (the same principle as the SQL placeholders — data never becomes markup), prices run through a currency formatter, and the row count is capped at 50 so a single email can't become a bulk export of the MLS.</p>
+  <p>Every generated email also carries a fixed footer: <em>"IDX Exchange · Draft email · Requires human approval before send"</em>.</p>
+  <div class="analogy"><p><b>If you're asked which one the demo used:</b> the WhatsApp path — it reuses the agents' own replies as the body. The four HTML templates are the richer version, reachable from the command line. That difference is honest to admit; it's the same split that produced the "two implementations drifted" point in your reflection.</p></div>
+
+  <h3>9b. How the email queue works</h3>
+  <p>Drafting writes a JSON record to a file on disk: a unique ID, recipient, subject, body, and <code>status: "pending_approval"</code>. That's the entire drafting step — it has no ability to send.</p>
+  <p>Approving is a separate agent. It finds your most recent pending draft (or one you named by ID), flips the status to approved, and calls the send function. That function's first act is <code>assertSendAllowed</code>, which throws unless approval was passed in explicitly <em>and</em> the draft is in an approvable state. The status is written back as "sent" only after the mail server accepts it.</p>
+  <p>If sending fails — no credentials, for instance — the draft stays approved-but-unsent and can be retried. It fails closed, never open.</p>
+
+  <h3>Following one message all the way through</h3>
+  <p>Everything above, on one real message. You've already sent two: <em>"Find me affordable homes in Pasadena"</em> and <em>"Under $1.2M"</em>. Now you send a third.</p>
+
+  <p><b>1 — The message arrives.</b> WhatsApp hands over two things: the text, and who sent it.</p>
+  <div class="formula wrap-ok">text:    "Only 3 bedrooms"
+sender:  whatsapp:+1555…   <span class="cmt">← this is how it knows which conversation you're in</span></div>
+
+  <p><b>2 — Which specialist should answer?</b> The routing patterns are checked in order. The word <em>bedrooms</em> is in the search vocabulary, nothing else matches, so it's a property search.</p>
+  <div class="formula wrap-ok">route: search  →  the property search agent handles this</div>
+
+  <p><b>3 — What did this message alone say?</b> The message is read on its own, with no memory involved yet. Only one thing can be pulled out of it:</p>
+  <div class="formula">bedsMin:  3
+bedsMax:  3        <span class="cmt">← "only" means exactly 3, not 3-or-more</span>
+city:     —
+maxPrice: —        <span class="cmt">← this message says nothing about either</span></div>
+
+  <p><b>4 — Add it to what's already known.</b> This is the step that makes conversation work. Your session already holds the results of the two earlier messages, and the new value is layered on top. Nothing this message didn't mention gets touched:</p>
+  <div class="formula">before this message          after merging
+─────────────────────        ─────────────────────
+city:     Pasadena           city:     Pasadena     <span class="cmt">← kept</span>
+maxPrice: 1,200,000          maxPrice: 1,200,000    <span class="cmt">← kept</span>
+bedsMin:  —                  bedsMin:  3            <span class="cmt">← added</span>
+bedsMax:  —                  bedsMax:  3            <span class="cmt">← added</span></div>
+  <p class="step-note">Those are real values — that sequence is pinned by a test. Without this merge, "Only 3 bedrooms" would search every 3-bedroom home in California.</p>
+
+  <p><b>5 — Turn that into a database question.</b> Each filter that has a value adds one condition and one value, kept in matching order:</p>
+  <div class="formula wrap-ok">question: SELECT … FROM rets_property
+          WHERE L_Status = 'Active'
+            AND L_City = ?
+            AND L_SystemPrice &lt;= ?
+            AND L_Keyword2 = ?
+
+values:   ["Pasadena", 1200000, 3]</div>
+  <p>The values travel separately from the question, so nothing you typed can change what the question asks.</p>
+
+  <p><b>6 — Ask the database.</b> It runs against the active-listings table and comes back with matching rows — five of them for the reply, and never more than fifty in any case.</p>
+
+  <p><b>7 — Make it readable.</b> Raw database rows are turned into something you'd want to read on a phone:</p>
+  <div class="formula wrap-ok">1) 1247 N Los Robles Ave, Pasadena, 91104
+   $1,150,000 · 3 bd / 2 ba · 1,640 sqft · 24 photos
+
+2) 862 E Mountain St, Pasadena, 91104
+   $1,095,000 · 3 bd / 2 ba · 1,510 sqft · 31 photos</div>
+  <p class="step-note">Illustrative addresses — the real ones come from your database.</p>
+
+  <p><b>8 — Remember what was shown.</b> The results are saved back to your session. That's what makes the <em>next</em> message work: when you say "I like the first one", it knows which listing you mean.</p>
+
+  <p><b>9 — Reply.</b> The text goes back out through the same handler it came in on, and your phone buzzes.</p>
+
+  <div class="analogy"><p><b>The one step to remember:</b> step 4. Everything else is plumbing — reading a message, building a query, formatting a result. Step 4 is what turns eight separate questions into one conversation.</p></div>
+</section>
+
+<!-- ================= WHAT TO SAY ================= -->
+<section>
+  <span class="sec-kicker">During the live demo</span>
+  <h2>What to say, word for word</h2>
+  <p>Read the quoted lines out loud. The grey note under each is for your own understanding — and for follow-up questions — not to be recited.</p>
+
+  <h3>The opening — about 60 seconds</h3>
+  <p>Dense and factual: what the system is, what it queries, how it routes, and what technique sits behind each agent. No warm-up story — the specifics do the work.</p>
+
+  <div class="say">
+    <p class="quote">This is the IDX Multi-Agent Real Estate Assistant. It runs over WhatsApp and queries two MySQL tables from the California MLS — <em>rets_property</em>, which holds active listings, and <em>california_sold</em>, which holds closed sales.</p>
+    <p class="quote">Every message enters at a single point. A classifier reads it and routes it to one of seven agents: property search, market statistics, semantic search, recommendations, a knowledge agent, and two for email — one that drafts, one that sends. Eight routes in total, because a message asking two things at once runs two agents in parallel and merges the answers.</p>
+    <p class="quote">The method differs by agent. Structured search turns English into parameterized SQL. Semantic search embeds each listing as a 384-dimension vector and ranks by cosine similarity. Recommendations blend both — roughly sixty points of structured similarity, forty of embedding similarity — then price-check the result against sold comparables. The knowledge agent retrieves from indexed documents rather than generating from memory.</p>
+    <p class="quote">I'll send it eight messages. The last one is the one it won't send by itself.</p>
+    <p class="why"><b>Then stop talking and send message one.</b> That final line plants the safety gate early, so the payoff lands four minutes later instead of arriving cold.</p>
+  </div>
+
+  <p><b>Have the architecture diagram on screen while you say this.</b> Don't narrate it — it gives the audience something concrete to look at while you talk, and costs you no time. Switch to WhatsApp as you send the first message.</p>
+
+  <div class="warn">
+    <p><b>The numbers, so you don't fumble them:</b> 7 agents · 8 routes · 2 MySQL tables · 6 skills · 384-dimension vectors · 108 passing tests. The agent count and the route count are different because <em>mixed</em> runs two existing agents rather than adding a new one.</p>
+    <p><b>If you're running short, the 30-second version:</b> <em>"A WhatsApp assistant over two California MLS tables — active listings and closed sales. One entry point, a classifier, and seven agents behind it: search, market stats, semantic search, recommendations, knowledge, and two for email. Structured search compiles English into SQL; semantic search compares 384-dimension embeddings. Eight messages — and the last one is the one it won't send by itself."</em></p>
+  </div>
+
+  <h3>Four things not to do in the opening</h3>
+  <p><b>Don't list the ten features.</b> It eats a minute and the demo proves them faster than you can describe them. Naming things you're about to show also flattens them — the mixed query is far more impressive when nobody was told to expect it.</p>
+  <p><b>Don't walk through the architecture.</b> Tempting, because you built it and it's genuinely good work — but it belongs in the backup video, where there's no clock. Show the diagram, don't narrate it.</p>
+  <p><b>Don't explain how something works before showing that it works.</b> Send the message, let the answer land, <em>then</em> say what happened. Explanation before evidence sounds like hedging.</p>
+  <p><b>Don't pre-apologise.</b> No "this might be slow", no "hopefully this works". If something does break, handle it in the moment — an audience only registers a problem you draw attention to.</p>
+
+  <h3>Then the eight messages</h3>
+
+
+  <div class="say">
+    <p class="msg">Find me affordable homes in Pasadena and tell me whether prices are rising</p>
+    <p class="quote">That one message is asking two different things, so it went to two agents at the same time. The listings come from the active table; the price trend comes from the sold table. It ran both in parallel and merged the answer.</p>
+    <p class="why"><b>What's really happening:</b> <code>classifyIntent</code> detected both a search signal and a market signal, returned "mixed", and <code>Promise.all</code> ran <code>propertySearchAgent</code> and <code>marketStatsAgent</code> together. This is your strongest single moment — it proves orchestration, both databases, and two features at once.</p>
+  </div>
+
+  <div class="say">
+    <p class="msg">Under $1.2M</p>
+    <p class="quote">Notice I never said Pasadena again. It remembered.</p>
+    <p class="why"><b>What's really happening:</b> a session store keyed to your phone number holds the filters from the previous turn. The new constraint merges into the old ones instead of replacing them.</p>
+  </div>
+
+  <div class="say">
+    <p class="msg">Only 3 bedrooms</p>
+    <p class="quote">And they stack — city, then price, then bedrooms, across three messages.</p>
+    <p class="why"><b>Keep this one brief.</b> It's confirmation that memory accumulates rather than resets. Don't over-explain it.</p>
+  </div>
+
+  <div class="say">
+    <p class="msg">charming craftsman with mountain views</p>
+    <p class="quote">There's nothing in that sentence you could put in a database query — no price, no bedroom count. This is searching by meaning instead. Every listing description is converted into a list of numbers that captures what it means, and this finds the closest ones.</p>
+    <p class="why"><b>What's really happening:</b> the query is embedded with a local MiniLM model into a 384-number vector, then compared by cosine similarity against pre-computed vectors for every active listing's <code>L_Remarks</code>. Top 5 come back.</p>
+  </div>
+
+  <div class="say">
+    <p class="msg">I like the first one, find similar homes</p>
+    <p class="quote">This scores every other listing out of 100 — points for a similar price, matching bedrooms, same city, similar size, plus up to 40 points for how similar the descriptions read. Then it checks the price against homes that actually sold nearby at that size.</p>
+    <p class="why"><b>What's really happening:</b> structured similarity is worth about 60 points (20 price, 15 bedrooms, 15 city, 10 size) and embedding similarity contributes cosine × 40. Comps are drawn from sales within ±20% square footage in the last 6 months.</p>
+  </div>
+
+  <div class="say">
+    <p class="msg">What does DOM mean?</p>
+    <p class="quote">That's not a search at all. It found the most relevant passages in our reference documents and answered from those — which is why it's citing sources rather than guessing.</p>
+    <p class="why"><b>What's really happening:</b> the question is embedded, the 4 nearest document chunks are retrieved, and those are handed to the model with instructions to answer only from them. DOM means days on market.</p>
+  </div>
+
+  <div class="say gate">
+    <p class="msg">Draft an email about Pasadena listings</p>
+    <p class="quote">It's written the email — but nothing has been sent. It's sitting in a queue marked "pending approval" with an ID. There is no path in this code that sends an email without a person approving it first.</p>
+    <p class="why"><b>Then pause for a beat.</b> This is the required safety feature and the most important moment in the demo. Let the silence sit before you approve.</p>
+  </div>
+
+  <div class="say gate">
+    <p class="msg">approve</p>
+    <p class="quote">That's the human in the loop. One word from me, and only now does it actually send.</p>
+    <p class="why"><b>What's really happening:</b> a separate agent looks up the pending draft, marks it approved, and calls the send function — which throws an error unless approval was explicit. If mail credentials aren't configured it refuses to send and says so, which is still correct behaviour.</p>
+  </div>
+
+  <div class="say">
+    <p class="quote">Eight messages, seven agents, both databases — and one thing that deliberately refused to happen on its own.</p>
+    <p class="why"><b>Close on that.</b> Don't recap the feature list; you just showed it.</p>
+  </div>
+</section>
+
+<!-- ================= Q&A ================= -->
+<section>
+  <span class="sec-kicker">Be ready for these</span>
+  <h2>Questions you'll get</h2>
+  <p>Click any question to see an answer you can say in your own words. If you're asked something you genuinely don't know, say so and say what you'd check — that reads far better than guessing.</p>
+
+  <details>
+    <summary>How does it know which agent to use?</summary>
+    <p>A function called <code>classifyIntent</code> reads the message and matches it against patterns. Words like "find", "bedroom" or "under $" signal a search; "market", "trend" or "days on market" signal statistics; "what does X mean" signals a definition question; "approve" signals an email approval.</p>
+    <p><b>If pushed on why not use an LLM to route:</b> pattern matching is instant, free, and testable — every route is pinned by a unit test. An LLM router would be more flexible but slower, less predictable, and harder to prove correct.</p>
+  </details>
+
+  <details>
+    <summary>What's the difference between the two kinds of search?</summary>
+    <p>Structured search turns your words into database filters — city, price, bedrooms — and does an exact lookup. Semantic search is for descriptions that can't become filters, like "charming with lots of light". It compares meaning instead of matching fields.</p>
+    <p>The router prefers structured search whenever it finds real filters, and falls back to semantic search for pure description.</p>
+  </details>
+
+  <details>
+    <summary>Why embeddings instead of a keyword search?</summary>
+    <p>Keyword search fails on synonyms. "Cozy cottage" and "charming bungalow" share no words but mean nearly the same thing. Embeddings place text in a mathematical space where similar meanings sit close together, so the match works regardless of the exact words used.</p>
+  </details>
+
+  <details>
+    <summary>How does it remember the conversation?</summary>
+    <p>Each user has a session, keyed to their WhatsApp ID, holding the filters from previous turns. A new message is parsed and merged into what's already there rather than replacing it — which is why "under $1.2M" keeps the city from two messages ago.</p>
+    <p>The filters are stored as ranges (a minimum and a maximum for bedrooms and price) specifically so they can be narrowed one message at a time.</p>
+  </details>
+
+  <details>
+    <summary>Could it send an email by accident?</summary>
+    <p>No. Drafting and sending are separate code paths. Drafting saves to a queue and returns a preview — it has no ability to send. The send function begins by calling <code>assertSendAllowed</code>, which throws an error unless approval was explicitly passed in. Nothing automated — no scheduled task, no background job — has a route to it.</p>
+    <p>There are two more limits alongside it: results are capped at 50 rows so it can't bulk-export listing data, and credentials are stripped from any log or preview.</p>
+  </details>
+
+  <details>
+    <summary>How do you know it works?</summary>
+    <p>105 automated tests, all passing, plus a clean typecheck. They're written to run anywhere — no database, no network, no API keys — by testing the pure logic: the query builders return the SQL and parameters they'd send, and the tests check those rather than hitting a real database.</p>
+  </details>
+
+  <details>
+    <summary>What was the hardest part?</summary>
+    <p>An honest, specific answer: the two databases don't share a naming convention. City is <code>L_City</code> in one table and <code>City</code> in the other; bedrooms are <code>L_Keyword2</code>, bathrooms are <code>LM_Dec_3</code>. And the amenity flags aren't true/false — they're text, and the same column might say <code>'True'</code>, <code>'1'</code>, or <code>'Yes'</code>. Checking for <code>= true</code> silently returns almost nothing, which looks like an empty result rather than a bug.</p>
+  </details>
+
+  <details>
+    <summary>What would you do differently?</summary>
+    <p>Build the routing alongside each feature instead of at the end. The orchestrator was added in Week 9, after six skills already existed — and it turned out several working features had no route to them. Semantic search was fully built and tested, but no user could reach it, because it was never registered with the router.</p>
+    <p>The lesson: a feature isn't done when the code works. It's done when a user can reach it. Integration is a feature, not glue.</p>
+  </details>
+
+  <details>
+    <summary>How do you prevent SQL injection?</summary>
+    <p>Every query is parameterized. The SQL contains <code>?</code> placeholders and the values are passed separately to the driver, so user input is never assembled into the query text. There's no string interpolation of user input anywhere in the project.</p>
+  </details>
+
+  <details>
+    <summary>Why run the AI model locally instead of calling an API?</summary>
+    <p>The embedding model runs on the machine by default, so there's no API quota, no key needed to demo it, and results are reproducible. A cloud model is still available behind one environment variable if you want higher quality.</p>
+    <p>One catch worth knowing: the two models produce different-sized vectors (384 vs 768), so the cache records which model built it and refuses to mix them.</p>
+  </details>
+
+  <details>
+    <summary>What happens if it doesn't understand a message?</summary>
+    <p>It falls back to a message asking you to rephrase. It doesn't guess an agent, and it doesn't invent an answer.</p>
+  </details>
+</section>
+
+  <details>
+    <summary>Which embedding model, and why that one?</summary>
+    <p><code>all-MiniLM-L6-v2</code> — a small, well-established sentence-embedding model that runs locally in about a fifth of a second per query once loaded. It produces 384-number vectors, which is small enough to keep thousands of listings in memory and compare them instantly.</p>
+    <p>It was chosen over a cloud model because it needs no API key, has no quota, and gives identical results every run — all of which matter for a demo. The cloud option (Gemini, 768 numbers) is still available behind one environment variable if higher quality is wanted.</p>
+  </details>
+
+  <details>
+    <summary>Why 900-character chunks with a 120-character overlap?</summary>
+    <p>Chunks have to be small enough that a retrieved passage is actually about one thing, but large enough to keep a full definition or a column list intact. 900 was tuned upward from a 600 starting point because the MLS field definitions were being split mid-list.</p>
+    <p>The overlap is the important part: if a definition happens to fall exactly on a boundary, without overlap it gets cut in half and neither piece makes sense alone. Repeating 120 characters into the next chunk means anything short enough always appears whole somewhere.</p>
+  </details>
+
+  <details>
+    <summary>How would this scale to millions of listings?</summary>
+    <p>Honestly — the similarity search wouldn't, as written. It compares the query against every cached listing one at a time, which is fine for thousands but linear in the number of listings.</p>
+    <p>At serious scale you'd swap that brute-force scan for a vector database with an approximate nearest-neighbour index, which finds the closest matches without checking every one. The rest of the design — the routing, the SQL, the approval gate — wouldn't need to change.</p>
+    <p class="step-note">This is a good answer to give: it shows you know the limitation rather than not having noticed it.</p>
+  </details>
+
+<div class="warn">
+  <p><b>One honest note.</b> If you're asked something you don't know, the strongest answer is "I'm not certain — I'd check <em>[the file, the test, the schema]</em>." Nobody expects total recall of a twelve-week project, and a confident wrong answer is much worse than an honest gap.</p>
+  <p>The two things genuinely worth knowing cold are the approval gate and the two-database split. Everything else you can look up.</p>
+</div>
+
+<footer>
+  Companion to <code>docs/capstone-playbook.html</code> (timings and running order) and
+  <code>docs/architecture.md</code> (the diagrams).
+</footer>
+
+</div>
+</body>
+</html>
