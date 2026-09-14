@@ -251,7 +251,13 @@
     <tr><td>10</td><td>Email drafting with approval gate — messages 7 and 8</td></tr>
     <tr><td>9</td><td>WhatsApp communication layer — the entire run</td></tr>
   </table>
-  <b style="display:block;margin-top:14px">Numbers:</b> 7 agents · 8 routes · 2 tables · 384 dimensions · 114 tests passing
+  <b style="display:block;margin-top:14px">The three counts, if you're asked</b>
+  <table class="coverage">
+    <tr><td>6 skills</td><td>capability folders under <code>skills/</code> — each with its own SKILL.md, tests and npm script</td></tr>
+    <tr><td>7 agents</td><td>entry points the orchestrator dispatches to. <b>email-agent backs two of them</b> — drafting and approving are deliberately separate code paths, which is what makes the gate meaningful</td></tr>
+    <tr><td>8 routes</td><td>intents the classifier can return. <code>mixed</code> reuses two existing agents rather than adding a new one</td></tr>
+  </table>
+  <b style="display:block;margin-top:14px">Numbers:</b> 2 tables (35k active / 87k sold) · 384-dimension vectors · 21 RAG chunks · 114 tests passing
 </footer>
 
 </div>
