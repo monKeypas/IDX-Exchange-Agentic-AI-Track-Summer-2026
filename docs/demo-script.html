@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live Demo Script</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #f4f6f7;
+    --surface: #ffffff;
+    --ink: #16202a;
+    --muted: #5a6b78;
+    --line: #d7dee3;
+    --accent: #1a6b66;
+    --accent-soft: #e2efee;
+    --signal: #9d5d17;
+    --signal-soft: #f9efe1;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e141a; --surface: #161f26; --ink: #e8eef2; --muted: #93a3b0;
+      --line: #27333c; --accent: #5cb8b1; --accent-soft: #123330;
+      --signal: #dda861; --signal-soft: #2f2616;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e141a; --surface: #161f26; --ink: #e8eef2; --muted: #93a3b0;
+    --line: #27333c; --accent: #5cb8b1; --accent-soft: #123330;
+    --signal: #dda861; --signal-soft: #2f2616;
+  }
+
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--sans); line-height: 1.5;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; }
+
+  header { border-bottom: 3px solid var(--ink); padding-bottom: 18px; margin-bottom: 8px; }
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .sub { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .block {
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    padding: 20px 22px; margin-top: 14px;
+  }
+  .block.gate { border-left-color: var(--signal); background: var(--signal-soft); }
+  .block.plain { border-left-color: var(--line); }
+
+  .head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .num {
+    font-family: var(--mono); font-size: 13px; color: var(--accent);
+    background: var(--accent-soft); padding: 2px 9px; border-radius: 3px;
+  }
+  .gate .num { color: var(--signal); background: transparent; border: 1px solid var(--signal); }
+  .clock { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-left: auto; }
+
+  .send {
+    font-family: var(--mono); font-size: 16px; line-height: 1.45;
+    background: var(--ground); border: 1px dashed var(--line);
+    padding: 13px 15px; margin: 0 0 14px; border-radius: 4px;
+    user-select: all; cursor: text; word-break: break-word;
+  }
+
+  .say { font-size: 17px; margin: 0; }
+  .say::before { content: "“"; color: var(--accent); }
+  .say::after  { content: "”"; color: var(--accent); }
+  .gate .say::before, .gate .say::after { color: var(--signal); }
+
+  .cue {
+    margin: 12px 0 0; font-size: 14px; color: var(--muted);
+    padding-top: 10px; border-top: 1px solid var(--line);
+  }
+  .cue b { color: var(--ink); }
+
+  .label {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 6px;
+  }
+
+  .divider {
+    margin: 30px 0 4px; font-family: var(--mono); font-size: 12px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  }
+
+  footer {
+    margin-top: 34px; padding: 18px 20px; background: var(--surface);
+    border: 1px solid var(--line); font-size: 14px; color: var(--muted);
+  }
+  footer b { color: var(--ink); }
+  footer ul { margin: 8px 0 0; padding-left: 18px; }
+  footer li { margin-bottom: 5px; }
+
+  @media print {
+    :root { --ground:#fff; --surface:#fff; --ink:#000; --muted:#444; --line:#bbb;
+            --accent:#046; --accent-soft:#eef; --signal:#730; --signal-soft:#fff; }
+    body { font-size: 12px; }
+    .wrap { padding-block: 0; max-width: none; }
+    .block { break-inside: avoid; margin-top: 8px; padding: 12px 14px; }
+    .say { font-size: 14px; }
+    .send { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Live Demo Script</h1>
+  <p class="sub">Eight messages · five minutes · IDX Multi-Agent Real Estate Assistant</p>
+</header>
+
+<div class="block plain">
+  <div class="head"><span class="num">OPEN</span><span class="clock">0:00 — 0:50</span></div>
+  <p class="say">So this is our real estate assistant. It lives on WhatsApp — you just text it, like you'd text a person.</p>
+  <p class="say" style="margin-top:10px">Behind it are two MySQL tables from the California MLS — <i>rets_property</i>, everything currently for sale, and <i>california_sold</i>, everything that's already closed. You need both, because "show me some houses" and "is this a good time to buy" are completely different questions.</p>
+  <p class="say" style="margin-top:10px">So when a message comes in, something has to work out what you're actually asking and hand it to the right specialist. We ended up with seven — one searches listings, one does market stats, one searches by meaning rather than filters, one does recommendations, one answers questions out of our own documents, and two handle email.</p>
+  <p class="say" style="margin-top:10px">I'll send it eight messages. Fair warning — the last one's the one it won't send by itself.</p>
+  <p class="cue"><b>Diagram on screen, don't narrate it.</b> Switch to WhatsApp and send message 1.</p>
+</div>
+
+<p class="divider">The eight messages</p>
+
+<div class="block">
+  <div class="head"><span class="num">1</span><span class="clock">0:50</span></div>
+  <p class="label">Send</p>
+  <p class="send">Find me affordable homes in Pasadena and tell me whether prices are rising</p>
+  <p class="label">Say</p>
+  <p class="say">Okay, so look at what it did there. That got classified as a mixed intent — two different questions in one message. It ran the property search agent and the market stats agent in parallel, one hitting the active listings table, the other hitting closed sales, and merged both replies into one.</p>
+  <p class="cue"><b>Your best moment. Let them read it before you speak.</b></p>
+</div>
+
+<div class="block">
+  <div class="head"><span class="num">2</span><span class="clock">1:35</span></div>
+  <p class="label">Send</p>
+  <p class="send">Under $1.2M</p>
+  <p class="label">Say</p>
+  <p class="say">And I didn't say Pasadena that time. The session's holding the filters from the earlier turn, so this just merged a price ceiling onto what it already had.</p>
+</div>
+
+<div class="block">
+  <div class="head"><span class="num">3</span><span class="clock">1:55</span></div>
+  <p class="label">Send</p>
+  <p class="send">Only 3 bedrooms</p>
+  <p class="label">Say</p>
+  <p class="say">Same again — city, then a max price, now an exact bedroom count. Three turns in and the filter set just keeps accumulating.</p>
+  <p class="cue"><b>Drop this one if you're behind.</b> Message 2 already made the point.</p>
+</div>
+
+<div class="block">
+  <div class="head"><span class="num">4</span><span class="clock">2:15</span></div>
+  <p class="label">Send</p>
+  <p class="send">fully renovated with a chef's kitchen and open floor plan</p>
+  <p class="label">Say</p>
+  <p class="say">Now there's nothing in that sentence you could put in a WHERE clause — there's no column for "chef's kitchen", there's no open-floor-plan checkbox. So this doesn't touch the structured fields at all. Every listing gets embedded as a 384-dimension vector, the query gets embedded the same way, and it ranks by cosine similarity. It's matching on what the descriptions actually mean.</p>
+  <p class="cue">May take ~25s if the model is cold. <b>Warm it before you start.</b></p>
+</div>
+
+<div class="block">
+  <div class="head"><span class="num">5</span><span class="clock">2:50</span></div>
+  <p class="label">Send</p>
+  <p class="send">I like the first one, find similar homes</p>
+  <p class="label">Say</p>
+  <p class="say">So it resolves which listing I meant, then scores every other active one against it — roughly sixty points from the structured side, price, bedrooms, city, square footage, and forty from embedding similarity. Then it validates the asking price against sold comps in the same city within twenty percent of the square footage.</p>
+  <p class="cue">It should name the Studio City house from message 4. <b>Point at that line.</b></p>
+</div>
+
+<div class="block">
+  <div class="head"><span class="num">6</span><span class="clock">3:25</span></div>
+  <p class="label">Send</p>
+  <p class="send">What does DOM mean?</p>
+  <p class="label">Say</p>
+  <p class="say">That one routes as a knowledge intent, so it goes to RAG. It embedded the question, pulled the four closest chunks out of our indexed docs, and answered from those — which is why there's a sources line at the bottom. It's grounded in our documents rather than recalled from the model.</p>
+  <p class="cue">Keep it quick — palate cleanser before the ending.</p>
+</div>
+
+<div class="block gate">
+  <div class="head"><span class="num">7</span><span class="clock">3:50</span></div>
+  <p class="label">Send</p>
+  <p class="send">Draft an email to me@example.com about Pasadena listings</p>
+  <p class="label">Say</p>
+  <p class="say">Right — so the draft's written, and it's queued with an ID and a status of pending approval. Nothing has been sent. Drafting and sending are separate code paths, and the send function throws unless approval is passed in explicitly. There is no route from here to an outbound email without a person in between. Not on a timer, not in the background.</p>
+  <p class="cue"><b>Now stop. Two or three full seconds.</b> The silence is the deliverable — don't fill it. You must name a recipient or nothing gets queued.</p>
+</div>
+
+<div class="block gate">
+  <div class="head"><span class="num">8</span><span class="clock">4:25</span></div>
+  <p class="label">Send</p>
+  <p class="send">approve</p>
+  <p class="label">Say</p>
+  <p class="say">And that's the human in the loop. It found the pending draft, flipped it to approved, and called send — and it stops right there, because I haven't put mail credentials on this machine. Which is exactly the behaviour I want: it fails closed, not open.</p>
+</div>
+
+<div class="block plain">
+  <div class="head"><span class="num">CLOSE</span><span class="clock">4:45</span></div>
+  <p class="say">So — eight messages, seven agents, both tables. And one thing it flatly refused to do on its own.</p>
+  <p class="cue"><b>Stop there.</b> No feature recap, no thanking the panel, no trailing "so yeah".</p>
+</div>
+
+<footer>
+  <b>Before you start</b>
+  <ul>
+    <li>Restart OpenClaw so it loads the workspace at <code>…Summer-2026/openclaw/workspace</code></li>
+    <li>Warm the model: <code>npm run search:semantic -- "warm up"</code> — first load is ~25s</li>
+    <li>Clear the session: <code>rm -f openclaw/workspace/skills/property-search/.sessions.json</code></li>
+    <li>Architecture diagram open in a second tab</li>
+  </ul>
+  <b style="display:block;margin-top:14px">If it breaks</b>
+  <ul>
+    <li><b>"I'm not sure how to help"</b> — rephrase with a concrete noun, don't repeat yourself</li>
+    <li><b>Message 4 or 5 hangs</b> — cold model. Skip to message 6 and come back</li>
+    <li><b>Empty results</b> — Pasadena and Irvine are the safest cities in this dataset</li>
+    <li><b>Anything stalls mid-run</b> — likely a rate limit. Pause, then continue</li>
+  </ul>
+  <b>Numbers:</b> 7 agents · 8 routes · 2 tables · 384 dimensions · 114 tests passing
+</footer>
+
+</div>
+</body>
+</html>
