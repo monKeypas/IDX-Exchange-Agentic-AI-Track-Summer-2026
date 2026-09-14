@@ -136,7 +136,7 @@ screen, not narrated. Full wording is in `how-it-works.html`.
 - **Say:** keep this short — it's proof, not a feature tour. *If you're running behind,
   this is the one to drop — message 2 already proved memory works.*
 
-**2:05 · `charming craftsman with mountain views`**
+**2:05 · `fully renovated with a chef's kitchen and open floor plan`**
 
 - **Shows:** semantic search over `L_Remarks` embeddings.
 - **Say:** "No filters in that sentence — nothing to put in a WHERE clause. This is cosine

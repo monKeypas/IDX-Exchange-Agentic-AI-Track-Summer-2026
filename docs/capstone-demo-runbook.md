@@ -43,7 +43,7 @@ pinned by tests in `orchestrator/tests/orchestrate.test.ts`.
 | 1 | *"Find me affordable homes in Pasadena and tell me whether prices are rising"* | Orchestration, parallel agents, property search **and** market analytics, both tables — in one message |
 | 2 | *"Under $1.2M"* | Multi-turn session memory — the city carries over |
 | 3 | *"Only 3 bedrooms"* | Progressive refinement stacking on the prior turn |
-| 4 | *"charming craftsman with mountain views"* | Semantic similarity over `L_Remarks` embeddings |
+| 4 | *"fully renovated with a chef's kitchen and open floor plan"* | Semantic similarity over `L_Remarks` embeddings |
 | 5 | *"I like the first one, find similar homes"* | Recommendation engine + comp validation from `california_sold` |
 | 6 | *"What does DOM mean?"* | RAG grounded in indexed docs |
 | 7 | *"Draft an email about Pasadena listings"* | Email drafting — returns a preview and a draft id, **sends nothing** |

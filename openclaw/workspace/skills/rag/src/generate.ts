@@ -4,7 +4,9 @@ import { join } from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import type { RetrievedChunk } from "./retrieve.js";
 
-const GEMINI_CHAT_MODEL = process.env.RAG_CHAT_MODEL?.trim() || "gemini-2.0-flash";
+// 2.5-flash is what the configured key actually serves; 2.0-flash returned 404,
+// which silently dropped every answer onto the extractive fallback.
+const GEMINI_CHAT_MODEL = process.env.RAG_CHAT_MODEL?.trim() || "gemini-2.5-flash";
 
 function resolveGeminiApiKey(): string {
   const fromEnv =

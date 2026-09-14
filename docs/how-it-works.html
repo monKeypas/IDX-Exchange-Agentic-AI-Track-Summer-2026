@@ -544,88 +544,92 @@ values:   ["Pasadena", 1200000, 3]</div>
 <!-- ================= WHAT TO SAY ================= -->
 <section>
   <span class="sec-kicker">During the live demo</span>
-  <h2>What to say, word for word</h2>
-  <p>Read the quoted lines out loud. The grey note under each is for your own understanding — and for follow-up questions — not to be recited.</p>
+  <h2>What to actually say</h2>
+  <p>The quoted lines are what you say. The grey note under each is a delivery cue — where to pause, what to point at, what to skip if you're behind.</p>
 
-  <h3>The opening — about 60 seconds</h3>
-  <p>Dense and factual: what the system is, what it queries, how it routes, and what technique sits behind each agent. No warm-up story — the specifics do the work.</p>
+  <h3>How to use this</h3>
+  <p>These are spoken lines, not written ones — they're meant to sound like you talking, not like a report read aloud. Don't memorise them word for word. Learn the <em>beat</em> of each one: what you're pointing at, and the one thing you want people to notice. Then say it however it comes out on the day.</p>
+  <p>The rhythm that works: <b>send the message → shut up → let the answer appear → then talk about it.</b> Explaining before the evidence lands sounds like you're covering for something.</p>
+  <p><b>Sounding technical isn't about sounding stiff.</b> The credibility comes from precise nouns — <em>mixed intent</em>, <em>cosine similarity</em>, <em>384-dimension vector</em>, <em>sold comps</em>, <em>pending approval</em> — not from formal sentence structure. Say the exact word for the thing, then talk about it like a person. Vague phrasing in a formal voice sounds far less expert than precise phrasing in a relaxed one.</p>
+
+  <h3>Opening — about 50 seconds</h3>
 
   <div class="say">
-    <p class="quote">This is the IDX Multi-Agent Real Estate Assistant. It runs over WhatsApp and queries two MySQL tables from the California MLS — <em>rets_property</em>, which holds active listings, and <em>california_sold</em>, which holds closed sales.</p>
-    <p class="quote">Every message enters at a single point. A classifier reads it and routes it to one of seven agents: property search, market statistics, semantic search, recommendations, a knowledge agent, and two for email — one that drafts, one that sends. Eight routes in total, because a message asking two things at once runs two agents in parallel and merges the answers.</p>
-    <p class="quote">The method differs by agent. Structured search turns English into parameterized SQL. Semantic search embeds each listing as a 384-dimension vector and ranks by cosine similarity. Recommendations blend both — roughly sixty points of structured similarity, forty of embedding similarity — then price-check the result against sold comparables. The knowledge agent retrieves from indexed documents rather than generating from memory.</p>
-    <p class="quote">I'll send it eight messages. The last one is the one it won't send by itself.</p>
-    <p class="why"><b>Then stop talking and send message one.</b> That final line plants the safety gate early, so the payoff lands four minutes later instead of arriving cold.</p>
+    <p class="quote">So this is our real estate assistant. It lives on WhatsApp — you just text it, like you'd text a person.</p>
+    <p class="quote">Behind it are two MySQL tables from the California MLS — <em>rets_property</em>, which is everything currently for sale, and <em>california_sold</em>, which is everything that's already closed. You need both, because "show me some houses" and "is this a good time to buy" are completely different questions.</p>
+    <p class="quote">So when a message comes in, something has to work out what you're actually asking, and hand it to the right specialist. We ended up with seven of them — one searches listings, one does market stats, one searches by meaning rather than filters, one does recommendations, one answers questions out of our own documents, and two just handle email.</p>
+    <p class="quote">I'm going to send it eight messages. Fair warning — the last one's the one it won't send by itself.</p>
+    <p class="why"><b>Then send message one and stop talking.</b> That last line is doing real work: it makes people wait for the ending instead of meeting it cold four minutes later.</p>
   </div>
 
-  <p><b>Have the architecture diagram on screen while you say this.</b> Don't narrate it — it gives the audience something concrete to look at while you talk, and costs you no time. Switch to WhatsApp as you send the first message.</p>
+  <p><b>Have the architecture diagram up while you say this</b>, but don't talk about it. It gives people something to look at and quietly says "this is a real system". Switch to WhatsApp as you send the first message.</p>
 
-  <div class="warn">
-    <p><b>The numbers, so you don't fumble them:</b> 7 agents · 8 routes · 2 MySQL tables · 6 skills · 384-dimension vectors · 108 passing tests. The agent count and the route count are different because <em>mixed</em> runs two existing agents rather than adding a new one.</p>
-    <p><b>If you're running short, the 30-second version:</b> <em>"A WhatsApp assistant over two California MLS tables — active listings and closed sales. One entry point, a classifier, and seven agents behind it: search, market stats, semantic search, recommendations, knowledge, and two for email. Structured search compiles English into SQL; semantic search compares 384-dimension embeddings. Eight messages — and the last one is the one it won't send by itself."</em></p>
-  </div>
-
-  <h3>Four things not to do in the opening</h3>
-  <p><b>Don't list the ten features.</b> It eats a minute and the demo proves them faster than you can describe them. Naming things you're about to show also flattens them — the mixed query is far more impressive when nobody was told to expect it.</p>
-  <p><b>Don't walk through the architecture.</b> Tempting, because you built it and it's genuinely good work — but it belongs in the backup video, where there's no clock. Show the diagram, don't narrate it.</p>
-  <p><b>Don't explain how something works before showing that it works.</b> Send the message, let the answer land, <em>then</em> say what happened. Explanation before evidence sounds like hedging.</p>
-  <p><b>Don't pre-apologise.</b> No "this might be slow", no "hopefully this works". If something does break, handle it in the moment — an audience only registers a problem you draw attention to.</p>
-
-  <h3>Then the eight messages</h3>
-
+  <h3>The eight messages</h3>
 
   <div class="say">
     <p class="msg">Find me affordable homes in Pasadena and tell me whether prices are rising</p>
-    <p class="quote">That one message is asking two different things, so it went to two agents at the same time. The listings come from the active table; the price trend comes from the sold table. It ran both in parallel and merged the answer.</p>
-    <p class="why"><b>What's really happening:</b> <code>classifyIntent</code> detected both a search signal and a market signal, returned "mixed", and <code>Promise.all</code> ran <code>propertySearchAgent</code> and <code>marketStatsAgent</code> together. This is your strongest single moment — it proves orchestration, both databases, and two features at once.</p>
+    <p class="quote">Okay, so look at what it did there. That got classified as a mixed intent — two different questions in one message. It ran the property search agent and the market stats agent in parallel, one hitting the active listings table, the other hitting closed sales, and merged both replies into one.</p>
+    <p class="why"><b>This is your best moment — give it room.</b> Let people actually read the reply before you start talking. If you rush this one, nothing after it lands as well.</p>
   </div>
 
   <div class="say">
     <p class="msg">Under $1.2M</p>
-    <p class="quote">Notice I never said Pasadena again. It remembered.</p>
-    <p class="why"><b>What's really happening:</b> a session store keyed to your phone number holds the filters from the previous turn. The new constraint merges into the old ones instead of replacing them.</p>
+    <p class="quote">And I didn't say Pasadena that time. The session's holding the filters from the earlier turn, so this just merged a price ceiling onto what it already had.</p>
+    <p class="why"><b>Short and confident.</b> The point makes itself — resist the urge to explain session state. If someone wants the mechanism, they'll ask.</p>
   </div>
 
   <div class="say">
     <p class="msg">Only 3 bedrooms</p>
-    <p class="quote">And they stack — city, then price, then bedrooms, across three messages.</p>
-    <p class="why"><b>Keep this one brief.</b> It's confirmation that memory accumulates rather than resets. Don't over-explain it.</p>
+    <p class="quote">Same again — city, then a max price, now an exact bedroom count. Three turns in and the filter set just keeps accumulating.</p>
+    <p class="why"><b>Drop this one if you're behind.</b> The previous message already made the point.</p>
   </div>
 
   <div class="say">
-    <p class="msg">charming craftsman with mountain views</p>
-    <p class="quote">There's nothing in that sentence you could put in a database query — no price, no bedroom count. This is searching by meaning instead. Every listing description is converted into a list of numbers that captures what it means, and this finds the closest ones.</p>
-    <p class="why"><b>What's really happening:</b> the query is embedded with a local MiniLM model into a 384-number vector, then compared by cosine similarity against pre-computed vectors for every active listing's <code>L_Remarks</code>. Top 5 come back.</p>
+    <p class="msg">fully renovated with a chef's kitchen and open floor plan</p>
+    <p class="quote">Now there's nothing in that sentence you could put in a WHERE clause — there's no column for "chef's kitchen", there's no open-floor-plan checkbox. So this doesn't touch the structured fields at all. Every listing gets embedded as a 384-dimension vector, the query gets embedded the same way, and it ranks by cosine similarity. It's matching on what the descriptions actually mean.</p>
+    <p class="why"><b>Worth slowing down for.</b> Most people have never seen search work this way, and "384 numbers" is concrete enough to stick.</p>
   </div>
 
   <div class="say">
     <p class="msg">I like the first one, find similar homes</p>
-    <p class="quote">This scores every other listing out of 100 — points for a similar price, matching bedrooms, same city, similar size, plus up to 40 points for how similar the descriptions read. Then it checks the price against homes that actually sold nearby at that size.</p>
-    <p class="why"><b>What's really happening:</b> structured similarity is worth about 60 points (20 price, 15 bedrooms, 15 city, 10 size) and embedding similarity contributes cosine × 40. Comps are drawn from sales within ±20% square footage in the last 6 months.</p>
+    <p class="quote">So it resolves which listing I meant, then scores every other active one against it — roughly sixty points from the structured side, price, bedrooms, city, square footage, and forty from embedding similarity. Then it validates the asking price against sold comps in the same city within twenty percent of the square footage. So it's not just "here's something similar" — it's "here's something similar, and here's whether it's priced sensibly".</p>
+    <p class="why">If you're asked for the split: roughly 60 points of hard facts, 40 of similarity in the wording.</p>
   </div>
 
   <div class="say">
     <p class="msg">What does DOM mean?</p>
-    <p class="quote">That's not a search at all. It found the most relevant passages in our reference documents and answered from those — which is why it's citing sources rather than guessing.</p>
-    <p class="why"><b>What's really happening:</b> the question is embedded, the 4 nearest document chunks are retrieved, and those are handed to the model with instructions to answer only from them. DOM means days on market.</p>
+    <p class="quote">That one routes as a knowledge intent, so it goes to RAG. It embedded the question, pulled the four closest chunks out of our indexed docs, and answered from those — which is why there's a sources line at the bottom. It's grounded in our documents rather than recalled from the model.</p>
+    <p class="why"><b>Keep it quick.</b> This one's a palate cleanser between the two heavy sections. DOM is days on market, if anyone asks.</p>
   </div>
 
   <div class="say gate">
     <p class="msg">Draft an email about Pasadena listings</p>
-    <p class="quote">It's written the email — but nothing has been sent. It's sitting in a queue marked "pending approval" with an ID. There is no path in this code that sends an email without a person approving it first.</p>
-    <p class="why"><b>Then pause for a beat.</b> This is the required safety feature and the most important moment in the demo. Let the silence sit before you approve.</p>
+    <p class="quote">Right — so the draft's written, and it's queued with an ID and a status of pending approval. Nothing has been sent. Drafting and sending are separate code paths, and the send function throws unless approval is passed in explicitly. There is no route from here to an outbound email without a person in between. Not on a timer, not in the background.</p>
+    <p class="why"><b>Now actually stop.</b> Two or three full seconds. This is the moment the whole demo has been building to, and silence is what sells it. Don't fill the gap.</p>
   </div>
 
   <div class="say gate">
     <p class="msg">approve</p>
-    <p class="quote">That's the human in the loop. One word from me, and only now does it actually send.</p>
-    <p class="why"><b>What's really happening:</b> a separate agent looks up the pending draft, marks it approved, and calls the send function — which throws an error unless approval was explicit. If mail credentials aren't configured it refuses to send and says so, which is still correct behaviour.</p>
+    <p class="quote">And that's the human in the loop. It looks up the pending draft, flips the status to approved, and only then calls send. One word from me — it can do all the work, it just doesn't get to make that call.</p>
+    <p class="why">If sending fails because mail credentials aren't set up: <q>and there it is refusing to send, which is honestly the behaviour I want.</q> Say it evenly and move on — it's a fair recovery, not an excuse.</p>
   </div>
 
   <div class="say">
-    <p class="quote">Eight messages, seven agents, both databases — and one thing that deliberately refused to happen on its own.</p>
-    <p class="why"><b>Close on that.</b> Don't recap the feature list; you just showed it.</p>
+    <p class="quote">So — eight messages, seven agents, both tables. And one thing it flatly refused to do on its own.</p>
+    <p class="why"><b>Stop there.</b> Don't recap the features, don't thank the panel for their time, don't trail off into "so yeah". End on the refusal and let it sit.</p>
   </div>
+
+  <h3>Four things not to do</h3>
+  <p><b>Don't list the features first.</b> It burns a minute, and telling people what's coming flattens it. The mixed query hits much harder when nobody saw it coming.</p>
+  <p><b>Don't walk through the architecture.</b> It's good work and it's tempting — but it belongs in the video where there's no clock. Show the diagram, don't narrate it.</p>
+  <p><b>Don't explain before you demonstrate.</b> Send, wait, then talk. Every time.</p>
+  <p><b>Don't pre-apologise.</b> No "this might be a bit slow", no "hopefully this works". People only notice the problems you point at.</p>
+
+  <div class="warn">
+    <p><b>Numbers, so you don't fumble them:</b> 7 agents · 8 routes · 2 MySQL tables · 6 skills · 384-dimension vectors · 109 passing tests. Agents and routes differ because <em>mixed</em> runs two existing agents rather than adding a new one.</p>
+    <p><b>It's fine to sound unrehearsed.</b> Restarting a sentence, saying "um", pausing to find a word — none of that reads as unprepared. Reciting fluent paragraphs at speed does.</p>
+  </div>
+
 </section>
 
 <!-- ================= Q&A ================= -->
