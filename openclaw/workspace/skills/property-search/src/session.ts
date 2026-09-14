@@ -167,7 +167,7 @@ export async function parseConversationalUpdate(
   return updates;
 }
 
-function sessionToFilters(session: UserSession): PropertyFilters {
+export function sessionToFilters(session: UserSession): PropertyFilters {
   const filters = emptyPropertyFilters();
   for (const key of Object.keys(filters) as (keyof PropertyFilters)[]) {
     const value = session[key];

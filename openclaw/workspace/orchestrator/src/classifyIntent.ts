@@ -12,13 +12,17 @@ export type OrchestratorIntent =
 // Plural forms matter: WhatsApp refinements read "3 bedrooms", not "3 bedroom".
 // `view` is deliberately absent — "mountain views" should reach semantic search.
 const SEARCH =
-  /\b(find|show|search|look for|homes?|listings?|properties|property|beds?|bedrooms?|baths?|bathrooms?|condos?|townhomes?|affordable|under \$|house|houses|pool|garage|fireplace|spa|sq ?ft|square feet|hoa|acres?|zip)\b/i;
+  /\b(find|show|search|look for|homes?|listings?|properties|property|beds?|bedrooms?|baths?|bathrooms?|condos?|townhomes?|affordable|under \$|house|houses|pool|garage|fireplace|spa|\d\s*(?:sq ?ft|square feet)|hoa|acres?|zip)\b/i;
 const MARKET =
   /\b(market|prices?\s+(rising|falling|increasing|decreasing|trend)|good time to buy|stats|dom|list-to-close|median|inventory|trend|avg price|price per sq|whether prices)\b/i;
 const RECOMMEND = /\b(similar|recommend|properties like|homes like|i like|find me similar|like this)\b/i;
 const KNOWLEDGE =
   /\b(what (does|is|are)|define|meaning of|columns (are )?in|disclosure|escrow|cap rate|what's a|what is a)\b/i;
 const EMAIL = /\b(email|e-mail|draft|compose|send (me )?(a )?summary|write (me )?(an )?email)\b/i;
+
+// Metric words mean "what is ..." is asking for a number, not a definition.
+const METRIC =
+  /\b(average|avg|median|price per|list-to-close|inventory|trend|stats|days on market|how much)\b/i;
 
 // Descriptive, lifestyle-style phrasing that structured filters cannot express.
 const SEMANTIC =
@@ -57,7 +61,8 @@ export function classifyIntent(query: string): OrchestratorIntent {
   // Approval is checked first: it acts on an existing draft, never creates one.
   if (isApprovalCommand(q)) return "email_approve";
 
-  const definitional = /^what (does|is|are)\b/i.test(q);
+  // "What does DOM mean?" is a definition; "What is the median price?" is a statistic.
+  const definitional = /^what (does|is|are)\b/i.test(q) && !METRIC.test(q);
   const hasSearch = SEARCH.test(q);
   const hasMarket = MARKET.test(q) && !definitional;
   const hasRecommend = RECOMMEND.test(q);

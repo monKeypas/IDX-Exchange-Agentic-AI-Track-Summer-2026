@@ -163,3 +163,21 @@ describe("classifyIntent — email approval guardrail", () => {
     expect(extractDraftId("approve")).toBeNull();
   });
 });
+
+describe("classifyIntent — definition vs statistic", () => {
+  // "DOM" and "median" are market vocabulary, but a question can still be definitional.
+  it("routes definition questions to knowledge", () => {
+    expect(classifyIntent("What does DOM mean?")).toBe("knowledge");
+    expect(classifyIntent("What is escrow?")).toBe("knowledge");
+  });
+
+  // A "what is" question asking for a number is a market question, not a definition.
+  it("routes metric questions to market even when they start with 'what is'", () => {
+    expect(classifyIntent("What is the median price in Irvine?")).toBe("market");
+    expect(classifyIntent("What is the average price per sq ft in Pasadena?")).toBe("market");
+  });
+
+  it("still treats a numbered square-footage filter as a search", () => {
+    expect(classifyIntent("3 bed 2.5 bath 1800 sqft in Irvine")).toBe("search");
+  });
+});

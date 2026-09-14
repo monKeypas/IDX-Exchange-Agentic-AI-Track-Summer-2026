@@ -1,9 +1,10 @@
 import { answerMarketQuestion } from "../../skills/market-stats/src/marketStats.js";
-import { parsePropertyQuery } from "../../skills/property-search/src/parsePropertyQuery.js";
 import { searchActiveListings } from "../../skills/property-search/src/mlsSearch.js";
 import {
   formatListingResults,
   getSession,
+  parseConversationalUpdate,
+  sessionToFilters,
   updateSession,
 } from "../../skills/property-search/src/session.js";
 import { recommendSimilarListings } from "../../skills/recommendations/src/recommend.js";
@@ -25,9 +26,16 @@ export async function propertySearchAgent(
   query: string,
   userId: string,
 ): Promise<AgentResult> {
-  const filters = await parsePropertyQuery(query);
-  const { rows } = await searchActiveListings(filters, 1, 5);
-  updateSession(userId, { lastResults: rows, conversationStep: getSession(userId).conversationStep + 1 });
+  // Parse this message alone, then merge it onto what earlier turns established,
+  // so "Under $1.2M" keeps the city from two messages ago.
+  const updates = await parseConversationalUpdate(query);
+  const current = getSession(userId);
+  updateSession(userId, { ...updates, conversationStep: current.conversationStep + 1 });
+
+  const session = getSession(userId);
+  const { rows } = await searchActiveListings(sessionToFilters(session), 1, 5);
+  updateSession(userId, { lastResults: rows });
+
   return {
     agent: "propertySearchAgent",
     reply: formatListingResults(rows),

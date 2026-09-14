@@ -6,6 +6,7 @@ import {
   nextMissingQuestion,
   parseConversationalUpdate,
   resetAllSessions,
+  sessionToFilters,
   updateSession,
 } from "../src/session.js";
 import type { ListingRow } from "../src/mlsSearch.js";
@@ -135,5 +136,29 @@ describe("formatListingResults", () => {
     expect(text).toContain("$1,100,000");
     expect(text).toContain("3 bd / 2 ba");
     expect(text).toContain("18 photos");
+  });
+});
+
+describe("filters accumulate across turns", () => {
+  // Regression: the WhatsApp path used to parse each message in isolation,
+  // so "Under $1.2M" silently dropped the city from the previous turn.
+  it("keeps earlier constraints when a later message adds a new one", async () => {
+    resetAllSessions();
+    const user = "accumulate-test";
+
+    for (const message of ["Find me homes in Pasadena", "Under $1.2M", "Only 3 bedrooms"]) {
+      const updates = await parseConversationalUpdate(message);
+      updateSession(user, {
+        ...updates,
+        conversationStep: getSession(user).conversationStep + 1,
+      });
+    }
+
+    expect(sessionToFilters(getSession(user))).toMatchObject({
+      city: "Pasadena",
+      maxPrice: 1_200_000,
+      bedsMin: 3,
+      bedsMax: 3,
+    });
   });
 });
