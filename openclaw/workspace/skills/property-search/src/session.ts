@@ -155,9 +155,17 @@ export async function parseConversationalUpdate(
   if (!updates.city && /^\d{5}$/.test(trimmed)) updates.zip = trimmed;
 
   if (!updates.city) {
+    // A user typing just "Pasadena" or "San Luis Obispo" means a city. A whole
+    // sentence does not — without the length and verb guards, "Draft an email
+    // about Pasadena listings" was being stored as the city name.
+    const wordCount = trimmed.split(/\s+/).length;
     const looksLikeCity =
+      wordCount <= 3 &&
       /^[A-Za-z][A-Za-z\s.'-]{1,40}$/.test(trimmed) &&
       !/(bed|bath|condo|townhome|single family|land|pool|view|under|budget|million|city|garage|hoa)/i.test(
+        trimmed,
+      ) &&
+      !/\b(draft|email|send|compose|write|find|show|search|tell|give|make|about|similar|recommend|approve|help|thanks?|hello|hey)\b/i.test(
         trimmed,
       ) &&
       isValidCityName(trimmed);

@@ -50,17 +50,50 @@ export async function marketStatsAgent(query: string): Promise<AgentResult> {
   };
 }
 
+const ORDINAL_POSITIONS: Record<string, number> = {
+  first: 0, "1st": 0, one: 0,
+  second: 1, "2nd": 1, two: 1,
+  third: 2, "3rd": 2, three: 2,
+  fourth: 3, "4th": 3, four: 3,
+  fifth: 4, "5th": 4, five: 4,
+};
+
+/**
+ * "the first one", "#2", "that one" — which of the listings we just showed?
+ * Returns a zero-based index, or null when the message names no position.
+ */
+export function referencedResultIndex(text: string): number | null {
+  const ordinal = text.match(
+    /\b(?:the\s+)?(first|second|third|fourth|fifth|1st|2nd|3rd|4th|5th)\b/i,
+  );
+  if (ordinal) return ORDINAL_POSITIONS[ordinal[1].toLowerCase()] ?? null;
+
+  const numbered = text.match(/(?:#|number\s*|option\s*)(\d)\b/i);
+  if (numbered) return Math.max(0, Number(numbered[1]) - 1);
+
+  if (/\b(that one|this one|the one|that place)\b/i.test(text)) return 0;
+  return null;
+}
+
 export async function recommendationAgent(
   query: string,
   userId: string,
 ): Promise<AgentResult> {
   let text = query.trim();
   const session = getSession(userId);
-  const liked = session.lastResults?.[0];
-  if (liked && !/\b(like|similar|recommend)\b/i.test(text)) {
-    const address = [liked.L_Address, liked.L_City].filter(Boolean).join(", ");
-    text = `I like ${address}, find similar homes`;
+  const results = session.lastResults ?? [];
+
+  // A reference like "the first one" means nothing to the matcher on its own —
+  // swap in the actual address of the listing the user is pointing at.
+  const index = referencedResultIndex(text);
+  const referenced =
+    index != null ? results[index] : /\b(like|similar|recommend)\b/i.test(text) ? null : results[0];
+
+  if (referenced) {
+    const address = [referenced.L_Address, referenced.L_City].filter(Boolean).join(", ");
+    if (address) text = `I like ${address}, find similar homes`;
   }
+
   const result = await recommendSimilarListings(text, { topK: 5 });
   return {
     agent: "recommendationAgent",
@@ -93,18 +126,23 @@ export async function emailDraftAgent(
   const wantsMarket = /\b(market|stats|trend|dom|prices?)\b/i.test(lower);
   const wantsListings = /\b(home|listing|property|condo|house)\b/i.test(lower);
 
+  // Search with the filters already established — asking for an email is not
+  // itself a search refinement, and must not overwrite what the user set up.
+  const listingsFromSession = async () => {
+    const { rows } = await searchActiveListings(sessionToFilters(getSession(userId)), 1, 5);
+    return formatListingResults(rows);
+  };
+
   let body = "";
   if (wantsListings || !wantsMarket) {
-    const listings = await propertySearchAgent(query, userId);
-    body = listings.reply;
+    body = await listingsFromSession();
   }
   if (wantsMarket) {
     const stats = await marketStatsAgent(query);
     body = body ? `${body}\n\n${stats.reply}` : stats.reply;
   }
   if (!body) {
-    const listings = await propertySearchAgent(query, userId);
-    body = listings.reply;
+    body = await listingsFromSession();
   }
 
   const subject = inferEmailSubject(

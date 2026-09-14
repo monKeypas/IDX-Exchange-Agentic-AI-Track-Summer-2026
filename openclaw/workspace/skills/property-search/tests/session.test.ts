@@ -162,3 +162,23 @@ describe("filters accumulate across turns", () => {
     });
   });
 });
+
+describe("bare-city heuristic", () => {
+  // Regression: any letters-only message used to be accepted as a city name,
+  // so "Draft an email about Pasadena listings" was stored as the city.
+  it("accepts a bare city name", async () => {
+    expect((await parseConversationalUpdate("Pasadena")).city).toBe("Pasadena");
+    expect((await parseConversationalUpdate("San Luis Obispo")).city).toBe("San Luis Obispo");
+  });
+
+  it("rejects whole sentences and commands", async () => {
+    for (const text of [
+      "Draft an email about Pasadena listings",
+      "find me something nice",
+      "send me a summary",
+      "thanks",
+    ]) {
+      expect((await parseConversationalUpdate(text)).city).toBeUndefined();
+    }
+  });
+});

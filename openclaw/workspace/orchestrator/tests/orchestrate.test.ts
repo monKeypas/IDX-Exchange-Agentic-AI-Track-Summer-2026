@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { classifyIntent, extractDraftId, isApprovalCommand } from "../src/classifyIntent.js";
+import { referencedResultIndex } from "../src/agents.js";
 import { formatEmailDraft } from "../src/emailDraft.js";
 import { formatCombinedResponse } from "../src/orchestrate.js";
 import { formatForWhatsApp } from "../src/whatsapp.js";
@@ -179,5 +180,23 @@ describe("classifyIntent — definition vs statistic", () => {
 
   it("still treats a numbered square-footage filter as a search", () => {
     expect(classifyIntent("3 bed 2.5 bath 1800 sqft in Irvine")).toBe("search");
+  });
+});
+
+describe("referencedResultIndex", () => {
+  // "the first one" carries no meaning for the similarity matcher — it has to
+  // be resolved to the listing the user is pointing at before the search runs.
+  it("resolves ordinal references", () => {
+    expect(referencedResultIndex("I like the first one, find similar homes")).toBe(0);
+    expect(referencedResultIndex("show me more like the third")).toBe(2);
+  });
+
+  it("resolves numbered and demonstrative references", () => {
+    expect(referencedResultIndex("similar to #2")).toBe(1);
+    expect(referencedResultIndex("find more like that one")).toBe(0);
+  });
+
+  it("returns null when no position is named", () => {
+    expect(referencedResultIndex("homes like 257 Fay Way")).toBeNull();
   });
 });
