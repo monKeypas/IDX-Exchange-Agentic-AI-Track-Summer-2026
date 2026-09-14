@@ -603,15 +603,15 @@ values:   ["Pasadena", 1200000, 3]</div>
   </div>
 
   <div class="say gate">
-    <p class="msg">Draft an email about Pasadena listings</p>
+    <p class="msg">Draft an email to me@example.com about Pasadena listings</p>
     <p class="quote">Right — so the draft's written, and it's queued with an ID and a status of pending approval. Nothing has been sent. Drafting and sending are separate code paths, and the send function throws unless approval is passed in explicitly. There is no route from here to an outbound email without a person in between. Not on a timer, not in the background.</p>
     <p class="why"><b>Now actually stop.</b> Two or three full seconds. This is the moment the whole demo has been building to, and silence is what sells it. Don't fill the gap.</p>
   </div>
 
   <div class="say gate">
     <p class="msg">approve</p>
-    <p class="quote">And that's the human in the loop. It looks up the pending draft, flips the status to approved, and only then calls send. One word from me — it can do all the work, it just doesn't get to make that call.</p>
-    <p class="why">If sending fails because mail credentials aren't set up: <q>and there it is refusing to send, which is honestly the behaviour I want.</q> Say it evenly and move on — it's a fair recovery, not an excuse.</p>
+    <p class="quote">And that's the human in the loop. It found the pending draft, flipped it to approved, and called send — and it stops right there, because I haven't put mail credentials on this machine. Which is exactly the behaviour I want: it fails closed, not open. One word from me is what moves it, and without that word nothing moves at all.</p>
+    <p class="why"><b>Name the recipient in message 7</b> — without either an address in the message or <code>EMAIL_USER</code> set, no draft is queued and there is nothing to approve. If you do configure credentials, this ends with a real send instead; either version demonstrates the gate.</p>
   </div>
 
   <div class="say">

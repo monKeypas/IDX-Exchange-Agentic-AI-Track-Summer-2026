@@ -46,7 +46,7 @@ pinned by tests in `orchestrator/tests/orchestrate.test.ts`.
 | 4 | *"fully renovated with a chef's kitchen and open floor plan"* | Semantic similarity over `L_Remarks` embeddings |
 | 5 | *"I like the first one, find similar homes"* | Recommendation engine + comp validation from `california_sold` |
 | 6 | *"What does DOM mean?"* | RAG grounded in indexed docs |
-| 7 | *"Draft an email about Pasadena listings"* | Email drafting — returns a preview and a draft id, **sends nothing** |
+| 7 | *"Draft an email to me@example.com about Pasadena listings"* | Email drafting — returns a preview and a draft id, **sends nothing** |
 | 8 | *"approve"* | The approval gate closing the loop — send happens only now |
 
 Say out loud on step 7 that nothing has been sent yet. That pause is the deliverable.

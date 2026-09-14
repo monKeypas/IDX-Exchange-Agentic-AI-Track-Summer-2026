@@ -65,7 +65,7 @@ export async function orchestrate(query: string, userId: string): Promise<Orches
       return { query: text, intent, agents: [result.agent], reply: result.reply };
     }
     case "semantic": {
-      const result = await semanticSearchAgent(text);
+      const result = await semanticSearchAgent(text, userId);
       return { query: text, intent, agents: [result.agent], reply: result.reply };
     }
     case "mixed": {

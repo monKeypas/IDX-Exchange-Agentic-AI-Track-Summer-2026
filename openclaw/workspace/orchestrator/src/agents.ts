@@ -1,5 +1,5 @@
 import { answerMarketQuestion } from "../../skills/market-stats/src/marketStats.js";
-import { searchActiveListings } from "../../skills/property-search/src/mlsSearch.js";
+import { searchActiveListings, type ListingRow } from "../../skills/property-search/src/mlsSearch.js";
 import {
   formatListingResults,
   getSession,
@@ -101,9 +101,63 @@ export async function recommendationAgent(
   };
 }
 
+/** The embedding cache stores its own card shape; line it up with search results. */
+function cachedCardToListingRow(card: {
+  id: string;
+  displayId: string | null;
+  address: string | null;
+  city: string | null;
+  zip: string | null;
+  type: string | null;
+  price: number | null;
+  beds: number | null;
+  baths: number | null;
+  sqft: number | null;
+  yearBuilt: number | null;
+  photoCount: number | null;
+}): ListingRow {
+  return {
+    L_ListingID: card.id,
+    L_DisplayId: card.displayId,
+    L_Address: card.address,
+    L_City: card.city,
+    L_Zip: card.zip,
+    price: card.price,
+    beds: card.beds,
+    baths: card.baths,
+    sqft: card.sqft,
+    type: card.type,
+    status: "Active",
+    lat: null,
+    lng: null,
+    YearBuilt: card.yearBuilt,
+    AssociationFee: null,
+    DaysOnMarket: null,
+    PoolPrivateYN: null,
+    ViewYN: null,
+    FireplaceYN: null,
+    PhotoCount: card.photoCount,
+    LA1_UserFirstName: null,
+    LA1_UserLastName: null,
+    LO1_OrganizationName: null,
+  };
+}
+
 /** Free-text description → L_Remarks embedding search (Week 6). */
-export async function semanticSearchAgent(query: string): Promise<AgentResult> {
+export async function semanticSearchAgent(
+  query: string,
+  userId: string,
+): Promise<AgentResult> {
   const result = await searchSemanticListings(query, { topK: 5 });
+
+  // Store these too, so "the first one" on the next turn means what the user
+  // just saw — not whichever structured search happened to run before it.
+  if (result.matches.length > 0) {
+    updateSession(userId, {
+      lastResults: result.matches.map((m) => cachedCardToListingRow(m.card)),
+    });
+  }
+
   return {
     agent: "semanticSearchAgent",
     reply: result.reply,

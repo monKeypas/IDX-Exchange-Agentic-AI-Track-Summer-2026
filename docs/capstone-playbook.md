@@ -153,7 +153,7 @@ screen, not narrated. Full wording is in `how-it-works.html`.
 - **Shows:** RAG grounded in indexed documents, with sources.
 - **Say:** "Retrieved from indexed docs, not generated from memory — note the sources line."
 
-**3:40 · `Draft an email about Pasadena listings`** ← the gate
+**3:40 · `Draft an email to me@example.com about Pasadena listings`** ← the gate
 
 - **Shows:** drafting — returns a preview and a draft id, and sends nothing.
 - **Say:** "Nothing has been sent. It's queued as pending approval, and there is no code
