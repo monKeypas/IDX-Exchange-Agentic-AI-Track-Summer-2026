@@ -149,7 +149,7 @@
   <p class="send">Find me affordable homes in Pasadena and tell me whether prices are rising</p>
   <p class="meta"><span>intent <b>mixed</b> → <b>propertySearchAgent</b> + <b>marketStatsAgent</b>, concurrent</span><span>tables: <b>rets_property</b> + <b>california_sold</b></span><span class="feat">shows: multi-agent orchestration · NL property search · market analytics</span></p>
   <p class="label">While it runs</p>
-  <p class="say">The routing is deterministic — pattern matching, not a model. Six word lists, and the first rule that matches wins. It costs nothing per message and every route is pinned by a unit test.</p>
+  <p class="say">Routing is a chain of regular expressions, not a model. Six word lists, each tested against the raw message. This one matched the search list on “find” and the market list on “whether prices”, so both booleans came back true — that's the mixed branch. The two agents are dispatched under Promise.all rather than in sequence, so total latency is the slower of the two, not the sum.</p>
   <p class="label">When it replies</p>
   <p class="say">That classified as a mixed intent — the search pattern and the market pattern both matched. Property search and market stats ran concurrently, listings from <i>rets_property</i>, medians and days-on-market from <i>california_sold</i>, and the two replies merged. 277 active listings in Pasadena, median close $1.57 million, average DOM 37 days.</p>
   <p class="cue">Let the reply render before you talk over it.</p>
@@ -161,7 +161,7 @@
   <p class="send">Under $1.2M</p>
   <p class="meta"><span>intent <b>search</b> → <b>propertySearchAgent</b></span><span>table: <b>rets_property</b> · session store</span><span class="feat">shows: conversational multi-turn memory</span></p>
   <p class="label">While it runs</p>
-  <p class="say">Filters are held per user ID. Each message is parsed on its own, then merged onto what's already there — anything the new message doesn't mention is left untouched.</p>
+  <p class="say">Session state is a Map keyed by the WhatsApp peer ID, written through to a JSON file so it survives a restart. Each turn parses the incoming message on its own into a filter object — 26 nullable fields, city through max HOA — and then merges that onto the stored one. The merge skips nulls, so any field this message didn't mention keeps whatever an earlier turn set. It's the merged object that gets compiled into SQL, never the single message.</p>
   <p class="label">When it replies</p>
   <p class="say">Pasadena isn't in that message. Filters are held per user ID in a session; this parsed to a max price and merged onto the existing city rather than replacing it.</p>
 </div>
@@ -172,7 +172,7 @@
   <p class="send">Only 3 bedrooms</p>
   <p class="meta"><span>intent <b>search</b> → <b>propertySearchAgent</b></span><span>table: <b>rets_property</b> · session store</span><span class="feat">shows: progressive refinement (same feature as 2)</span></p>
   <p class="label">While it runs</p>
-  <p class="say">Storing ranges rather than fixed values is what makes that work — bedrooms are a minimum and a maximum, so a later message can narrow either end.</p>
+  <p class="say">The filters are range-shaped rather than scalar — bedsMin and bedsMax, minPrice and maxPrice — which is what lets a later turn narrow one end without discarding the other. “Only” sets both bedroom bounds to three, so the clause builder emits an equality test instead of a greater-than-or-equal.</p>
   <p class="label">When it replies</p>
   <p class="say">Three constraints now. "Only" sets the bedroom minimum and maximum to the same value, so that becomes an equality match rather than a floor.</p>
   <p class="cue">Droppable if you're behind — message 2 already showed accumulation.</p>
@@ -184,7 +184,7 @@
   <p class="send">fully renovated with a chef's kitchen and open floor plan</p>
   <p class="meta"><span>intent <b>semantic</b> → <b>semanticSearchAgent</b></span><span>source: <b>L_Remarks</b> embedding cache (384-d, MiniLM)</span><span class="feat">shows: semantic similarity search</span></p>
   <p class="label">While it runs</p>
-  <p class="say">Ahead of time, every listing was flattened into a paragraph — type, city, beds, baths, square footage, price, then the agent's written remarks — run through MiniLM, and averaged down to 384 numbers. That's cached on disk, which is why this comes back instantly.</p>
+  <p class="say">The cache was built ahead of time. Each listing is flattened into a text blob — type, city, beds, baths, square footage, year, price, then the agent's remarks — tokenised, and pushed through six transformer layers. That returns one 384-number vector per token, which is mean-pooled into a single vector for the listing and normalised to unit length. Two thousand of those sit in a 16-megabyte file. At query time the same model embeds the query, then it's a linear scan computing cosine similarity against every cached vector, sorted, top five.</p>
   <p class="label">When it replies</p>
   <p class="say">Nothing in that string maps to a column, so it routes to semantic rather than structured search. The query is embedded with MiniLM into 384 dimensions and ranked against pre-computed listing vectors by cosine similarity. Top five, scoring 55 to 59 percent.</p>
   <p class="cue">~25s if the model is cold. Warm it beforehand.</p>
@@ -196,7 +196,7 @@
   <p class="send">I like the first one, find similar homes</p>
   <p class="meta"><span>intent <b>recommend</b> → <b>recommendationAgent</b></span><span>tables: <b>rets_property</b> (candidates) + <b>california_sold</b> (comps)</span><span class="feat">shows: recommendation engine · comp-validated pricing</span></p>
   <p class="label">While it runs</p>
-  <p class="say">The structured half is graded: 20 points for a price within fifty thousand, 15 for matching bedrooms, 15 for the same city, 10 for size within three hundred square feet. Cosine similarity on the descriptions contributes up to 40 more.</p>
+  <p class="say">Two scores added together. The structured half is a step function — 20 points if the price is within fifty thousand, 12 within a hundred and fifty, 5 within three hundred; 15 for an exact bedroom match; 15 for the same city; 10 if square footage is within three hundred feet. That caps at sixty. Then cosine similarity between the two description embeddings, multiplied by forty. The comp check is a separate query against california_sold — same city, within twenty percent square footage, closed in the last six months — averaging close price per square foot and multiplying by the subject's size.</p>
   <p class="label">When it replies</p>
   <p class="say">"The first one" resolves against the results from the previous turn. It then scores every other active listing — roughly 60 points structured, from price proximity, bedroom match, city match and square footage, and 40 from cosine similarity on the descriptions. The comp check pulls closed sales in the same city within 20 percent square footage over six months.</p>
   <p class="cue">Should name the Studio City listing from message 4.</p>
@@ -208,7 +208,7 @@
   <p class="send">What does DOM mean?</p>
   <p class="meta"><span>intent <b>knowledge</b> → <b>ragAgent</b></span><span>source: 21 indexed chunks from <b>knowledge/*.md</b></span><span class="feat">shows: RAG knowledge assistant</span></p>
   <p class="label">While it runs</p>
-  <p class="say">Five markdown files, about fifteen thousand characters, sliced into 21 chunks of roughly 900 characters each — overlapping by 120, so a definition landing on a boundary isn't cut in half.</p>
+  <p class="say">The index was built beforehand. Five markdown files, about fifteen thousand characters, sliced into 900-character chunks stepping forward 780 at a time — so consecutive chunks overlap by 120, which is what stops a definition landing on a boundary from being cut in half. Twenty-one chunks, each embedded with the same MiniLM model. At query time the question is embedded, cosine-ranked against all twenty-one, and the top four are concatenated into a prompt that constrains generation to that text.</p>
   <p class="label">When it replies</p>
   <p class="say">Knowledge intent, so RAG. The question is embedded, the four nearest document chunks are retrieved by cosine, and generation is constrained to those chunks. The sources line lists which files they came from.</p>
 </div>
@@ -219,7 +219,7 @@
   <p class="send">Draft an email to me@example.com about Pasadena listings</p>
   <p class="meta"><span>intent <b>email</b> → <b>emailDraftAgent</b></span><span>table: <b>rets_property</b> → draft queue (status pending_approval)</span><span class="feat">shows: email drafting — the draft half of the approval gate</span></p>
   <p class="label">While it runs</p>
-  <p class="say">Every value in that email is either fixed template text or a number read from the database. Nothing in it is generated, so a draft can't invent a listing or a price.</p>
+  <p class="say">There's no generation anywhere in this path. The recipient is regex-extracted from the message, the subject is the topic following “about”, and the body is the property search agent's output for the filters already in session. It's persisted as a JSON record with a UUID and a status of pending_approval before anything is returned — so the draft exists on disk before the reply reaches the phone.</p>
   <p class="label">When it replies</p>
   <p class="say">The draft is written and persisted with a UUID and a status of pending_approval. Nothing has been sent. Drafting and sending are separate functions — the send function calls <i>assertSendAllowed</i> first, which throws unless explicit approval is passed in. No scheduled or background path reaches it.</p>
   <p class="cue">Pause here before sending message 8. Requires a named recipient or nothing is queued.</p>
@@ -231,7 +231,7 @@
   <p class="send">approve</p>
   <p class="meta"><span>intent <b>email_approve</b> → <b>emailApprovalAgent</b></span><span>draft queue → assertSendAllowed → SMTP</span><span class="feat">shows: human approval gate — nothing sends autonomously</span></p>
   <p class="label">While it runs</p>
-  <p class="say">assertSendAllowed is the first line of the send function. It throws unless explicit approval is passed in and the draft is in an approvable state.</p>
+  <p class="say">Two separate functions. The approval agent looks up the pending draft, sets its status to approved, and calls sendApprovedEmail — whose first statement is assertSendAllowed, which throws unless explicitApprove is true and the draft is in an approvable state. That function has exactly two callers in the codebase, this agent and the CLI send command, and both pass approval explicitly. No scheduled job or background turn reaches it.</p>
   <p class="label">When it replies</p>
   <p class="say">That looked up the pending draft, set its status to approved, and called send. It failed at the SMTP transport because mail credentials aren't set on this machine. The guardrail sits upstream of that — it fails closed rather than open.</p>
 </div>
