@@ -124,16 +124,41 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
+### ⚠️ Passing a user's message to any script
+
+The shell rewrites text before a script ever sees it. Two failures matter:
+
+- **Double quotes expand `$`.** `"Under $1.2M"` arrives as `"Under .2M"` — a $1.2M
+  budget becomes $200,000, with no error and a plausible-looking wrong answer.
+- **Single quotes break on apostrophes.** `'chef's kitchen'` terminates early.
+
+Use the `--stdin` heredoc form shown below for `orchestrate`, which is immune to both.
+The per-skill scripts (`chat`, `market`, `rag`, `search:semantic`, `recommend`) do not
+accept `--stdin`, so treat them as diagnostics — route real user messages through
+`orchestrate`.
+
 ### Orchestrator + WhatsApp (default — Weeks 9–10)
 
 For **any** user message, use the coordinator / WhatsApp handler. Do **not** call `chat`, `market`, `rag`, or other skill scripts directly unless `orchestrate` fails.
 
 1. Open `orchestrator/README.md` if you need the agent registry / reply rules.
-2. From the **git project root**, run:
+2. From the **git project root**, run this **exact** form — a quoted heredoc, so the
+   shell cannot alter the user's text:
 
 ```bash
-npm run orchestrate -- --user "<whatsapp-peer-id>" "<exact user message>"
+npm run orchestrate -- --user '<whatsapp-peer-id>' --stdin <<'MSG'
+<exact user message, on its own line, unmodified>
+MSG
 ```
+
+   **Never pass the message as a quoted argument.** In double quotes the shell expands
+   `$`, so "Under $1.2M" arrives as "Under .2M" and a $1.2M budget silently becomes
+   $200,000. In single quotes an apostrophe ends the string, so "chef's kitchen" breaks.
+   The `<<'MSG'` heredoc — note the quotes around the delimiter — prevents both.
+
+   Send **only** what the user typed. Do not prepend the city, restate earlier
+   criteria, or merge in anything from previous turns; the script keeps its own
+   per-user session and re-sending context corrupts it.
 
    That script runs Week 10 `onWhatsAppMessage` → Week 9 `orchestrate()` → agents → WhatsApp-formatted stdout.
 

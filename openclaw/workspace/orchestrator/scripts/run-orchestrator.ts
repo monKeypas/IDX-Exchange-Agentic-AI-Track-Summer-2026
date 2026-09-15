@@ -9,12 +9,25 @@ import { closePool as closeRecommendPool } from "../../skills/recommendations/sr
  * WhatsApp / OpenClaw entry point (Week 9–10).
  *
  * Usage:
- *   npm run orchestrate -- --user alice "Find affordable homes in Pasadena and tell me whether prices are rising"
+ *   npm run orchestrate -- --user alice "Find affordable homes in Pasadena"
  *   npm run orchestrate -- --user alice --json "What does DOM mean?"
+ *
+ * Prefer --stdin for anything a user typed. A message inside double quotes is
+ * mangled by the shell before it ever reaches this script — "Under $1.2M"
+ * arrives as "Under .2M", because $1 expands to an empty positional parameter,
+ * which silently turns a $1.2M budget into $200,000. Single quotes stop that
+ * but break on apostrophes ("chef's kitchen"). A quoted heredoc does neither:
+ *
+ *   npm run orchestrate -- --user alice --stdin <<'MSG'
+ *   Under $1.2M
+ *   MSG
  */
 
-const args = process.argv.slice(2).filter((a) => a !== "--json");
+import { readFileSync } from "node:fs";
+
+const args = process.argv.slice(2).filter((a) => a !== "--json" && a !== "--stdin");
 const asJson = process.argv.includes("--json");
+const fromStdin = process.argv.includes("--stdin");
 let userId = process.env.CHAT_USER_ID?.trim() || "local";
 const messageParts: string[] = [];
 
@@ -27,7 +40,10 @@ for (let i = 0; i < args.length; i++) {
   messageParts.push(args[i]);
 }
 
-const queryText = messageParts.join(" ").trim();
+// Read the raw message from stdin when asked, so no shell expansion can touch it.
+const queryText = fromStdin
+  ? readFileSync(0, "utf8").trim()
+  : messageParts.join(" ").trim();
 
 if (!queryText) {
   console.error(
