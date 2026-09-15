@@ -161,7 +161,7 @@
   <p class="send">Under $1.2M</p>
   <p class="meta"><span>intent <b>search</b> → <b>propertySearchAgent</b></span><span>table: <b>rets_property</b> · session store</span><span class="feat">shows: conversational multi-turn memory</span></p>
   <p class="label">While it runs</p>
-  <p class="say">Session state is a Map keyed by the WhatsApp peer ID, written through to a JSON file so it survives a restart. Each turn parses the incoming message on its own into a filter object — 26 nullable fields, city through max HOA — and then merges that onto the stored one. The merge skips nulls, so any field this message didn't mention keeps whatever an earlier turn set. It's the merged object that gets compiled into SQL, never the single message.</p>
+  <p class="say">Session state is a map keyed by the WhatsApp peer ID, persisted to disk. Each turn parses its own message into a filter object, then merges that onto the stored one — and the merge skips nulls, so any field this message didn't mention keeps whatever an earlier turn set. It's the merged object that becomes SQL, never the single message.</p>
   <p class="label">When it replies</p>
   <p class="say">Pasadena isn't in that message. Filters are held per user ID in a session; this parsed to a max price and merged onto the existing city rather than replacing it.</p>
 </div>
@@ -184,7 +184,7 @@
   <p class="send">fully renovated with a chef's kitchen and open floor plan</p>
   <p class="meta"><span>intent <b>semantic</b> → <b>semanticSearchAgent</b></span><span>source: <b>L_Remarks</b> embedding cache (384-d, MiniLM)</span><span class="feat">shows: semantic similarity search</span></p>
   <p class="label">While it runs</p>
-  <p class="say">The cache was built ahead of time. Each listing is flattened into a text blob — type, city, beds, baths, square footage, year, price, then the agent's remarks — tokenised, and pushed through six transformer layers. That returns one 384-number vector per token, which is mean-pooled into a single vector for the listing and normalised to unit length. Two thousand of those sit in a 16-megabyte file. At query time the same model embeds the query, then it's a linear scan computing cosine similarity against every cached vector, sorted, top five.</p>
+  <p class="say">The cache was built ahead of time. Each listing — type, city, beds, price, then the agent's remarks — goes through six transformer layers, which return one 384-number vector per token. Those get averaged into a single vector and normalised to unit length. At query time the same model embeds the query, then it's a scan computing cosine similarity against all two thousand.</p>
   <p class="label">When it replies</p>
   <p class="say">Nothing in that string maps to a column, so it routes to semantic rather than structured search. The query is embedded with MiniLM into 384 dimensions and ranked against pre-computed listing vectors by cosine similarity. Top five, scoring 55 to 59 percent.</p>
   <p class="cue">~25s if the model is cold. Warm it beforehand.</p>
@@ -196,7 +196,7 @@
   <p class="send">I like the first one, find similar homes</p>
   <p class="meta"><span>intent <b>recommend</b> → <b>recommendationAgent</b></span><span>tables: <b>rets_property</b> (candidates) + <b>california_sold</b> (comps)</span><span class="feat">shows: recommendation engine · comp-validated pricing</span></p>
   <p class="label">While it runs</p>
-  <p class="say">Two scores added together. The structured half is a step function — 20 points if the price is within fifty thousand, 12 within a hundred and fifty, 5 within three hundred; 15 for an exact bedroom match; 15 for the same city; 10 if square footage is within three hundred feet. That caps at sixty. Then cosine similarity between the two description embeddings, multiplied by forty. The comp check is a separate query against california_sold — same city, within twenty percent square footage, closed in the last six months — averaging close price per square foot and multiplying by the subject's size.</p>
+  <p class="say">Two scores added together. The structured half is a step function — 20 points for a price within fifty thousand, 15 for matching bedrooms, 15 for the same city, 10 for size within three hundred feet — capping at sixty. Then cosine similarity between the two descriptions, times forty. The comp check is a separate query: same city, within twenty percent square footage, closed in the last six months.</p>
   <p class="label">When it replies</p>
   <p class="say">"The first one" resolves against the results from the previous turn. It then scores every other active listing — roughly 60 points structured, from price proximity, bedroom match, city match and square footage, and 40 from cosine similarity on the descriptions. The comp check pulls closed sales in the same city within 20 percent square footage over six months.</p>
   <p class="cue">Should name the Studio City listing from message 4.</p>
@@ -208,7 +208,7 @@
   <p class="send">What does DOM mean?</p>
   <p class="meta"><span>intent <b>knowledge</b> → <b>ragAgent</b></span><span>source: 21 indexed chunks from <b>knowledge/*.md</b></span><span class="feat">shows: RAG knowledge assistant</span></p>
   <p class="label">While it runs</p>
-  <p class="say">The index was built beforehand. Five markdown files, about fifteen thousand characters, sliced into 900-character chunks stepping forward 780 at a time — so consecutive chunks overlap by 120, which is what stops a definition landing on a boundary from being cut in half. Twenty-one chunks, each embedded with the same MiniLM model. At query time the question is embedded, cosine-ranked against all twenty-one, and the top four are concatenated into a prompt that constrains generation to that text.</p>
+  <p class="say">The index was built beforehand — five markdown files sliced into 900-character chunks, stepping forward 780, so consecutive chunks overlap by 120. That overlap stops a definition landing on a boundary from being cut in half. Twenty-one chunks, each embedded. At query time the question is embedded, ranked by cosine against all of them, and the top four constrain the generation.</p>
   <p class="label">When it replies</p>
   <p class="say">Knowledge intent, so RAG. The question is embedded, the four nearest document chunks are retrieved by cosine, and generation is constrained to those chunks. The sources line lists which files they came from.</p>
 </div>
@@ -219,9 +219,9 @@
   <p class="send">Draft an email to me@example.com about Pasadena listings</p>
   <p class="meta"><span>intent <b>email</b> → <b>emailDraftAgent</b></span><span>table: <b>rets_property</b> → draft queue (status pending_approval)</span><span class="feat">shows: email drafting — the draft half of the approval gate</span></p>
   <p class="label">While it runs</p>
-  <p class="say">Nothing here is written by a model — the email is assembled. Two keyword tests run against the message, one for market words and one for listing words, and whichever fire decide what goes in it; if neither does, it defaults to listings. The listing section comes from re-running the property search against the filters already held in the session, not from anything in the email request — asking for an email isn't a search refinement, so it must not overwrite what you set up earlier. The subject is the topic following “about”, and the recipient is a regex match for an address in the message, falling back to the configured sender.</p>
+  <p class="say">Nothing here is written by a model — the email is assembled. Two keyword tests on the message decide the content: listings, market figures, or both. The listing section re-runs the search against the filters already in the session, not against this message. So every value in it is either template text or a row from the database.</p>
   <p class="label">When it replies</p>
-  <p class="say">So every value in that email is either fixed template text or a row read from the database — a draft can't invent a listing or a price. And it's already persisted: a JSON record with a UUID and a status of pending_approval, written to disk before that reply reached the phone. Nothing has been sent. Drafting and sending are separate functions, and the send function's first statement is assertSendAllowed, which throws unless explicit approval is passed in. There's no route from here to an outbound email without a person in between — not on a timer, not in the background.</p>
+  <p class="say">That draft is already on disk — a JSON record with a UUID and a status of pending_approval, written before the reply reached the phone. Nothing has been sent. Drafting and sending are separate functions, and the send function's first line is assertSendAllowed, which throws unless approval is passed in explicitly.</p>
   <p class="cue">Pause here before sending message 8. Requires a named recipient or nothing is queued.</p>
 </div>
 
